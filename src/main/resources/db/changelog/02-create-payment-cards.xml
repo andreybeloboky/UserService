@@ -20,6 +20,12 @@
             <column name="expiration_date" type="DATE">
                 <constraints nullable="false"/>
             </column>
+            <column name="createdAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
             <column name="active" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>

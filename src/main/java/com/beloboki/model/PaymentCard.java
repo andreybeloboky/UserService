@@ -3,6 +3,7 @@ package com.beloboki.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "payment_cards")
 @Setter
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 public class PaymentCard {
 
     @Id

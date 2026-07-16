@@ -20,6 +20,12 @@
             <column name="email" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="createdAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
             <column name="active" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
