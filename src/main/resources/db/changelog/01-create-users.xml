@@ -32,4 +32,14 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2" author="Andrei">
+        <createIndex tableName="users" indexName="idx_user_name" unique="false">
+            <column name="name"/>
+        </createIndex>
+
+        <createIndex tableName="users" indexName="idx_user_surname" unique="false">
+            <column name="surname"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
