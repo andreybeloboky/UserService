@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserDAO {
 
-    void createUser(User user);
+    void save(User user);
 
     void createCard(PaymentCard card);
 

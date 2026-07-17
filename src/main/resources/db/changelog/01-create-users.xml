@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="1" author="Andrei">
+    <changeSet id="16-07-26-add-table-users" author="Andrei">
         <createTable tableName="users">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -32,7 +32,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2" author="Andrei">
+    <changeSet id="16-07-26-add-index-users" author="Andrei">
         <createIndex tableName="users" indexName="idx_user_name" unique="false">
             <column name="name"/>
         </createIndex>
