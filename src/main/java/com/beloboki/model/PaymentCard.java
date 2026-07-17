@@ -1,8 +1,8 @@
 package com.beloboki.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,40 +11,37 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment_cards")
-@Setter
-@Getter
+@NoArgsConstructor
+@Data
 @EntityListeners(AuditingEntityListener.class)
 public class PaymentCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "number", nullable = false)
-    private long number;
+    private String number;
 
     @Column(name = "holder", nullable = false)
     private String holder;
 
     @Column(name = "expiration_date", nullable = false)
-    private LocalDateTime expiration_date;
+    private LocalDateTime expirationDate;
 
     @Column(name = "active", nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "createdAt")
     @CreatedDate
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updatedAt")
     @LastModifiedDate
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    public PaymentCard() {
-    }
 }

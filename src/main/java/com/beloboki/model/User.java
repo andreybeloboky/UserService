@@ -1,8 +1,8 @@
 package com.beloboki.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,20 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users",
-        indexes = {
-                @Index(name = "idx_user_name", columnList = "name"),
-                @Index(name = "idx_user_surname", columnList = "surname")
-        })
-@Setter
-@Getter
+@Table(name = "users")
+@Data
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -35,25 +31,22 @@ public class User {
     private String surname;
 
     @Column(name = "birth_date", nullable = false)
-    private LocalDate birth_date;
+    private LocalDate birthDate;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "active", nullable = false)
-    boolean active;
+    private Boolean active;
 
     @Column(name = "createdAt")
     @CreatedDate
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updatedAt")
     @LastModifiedDate
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PaymentCard> paymentCardList = new ArrayList<>();
-
-    public User() {
-    }
+    private List<PaymentCard> paymentCards = new ArrayList<>();
 }
