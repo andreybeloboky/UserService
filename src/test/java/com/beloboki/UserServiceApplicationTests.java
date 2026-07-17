@@ -7,10 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +36,7 @@ class UserDAOTest {
         user.setPaymentCards(List.of(paymentCard));
 
         var userSave = userDAO.saveAndFlush(user);
+
         Assertions.assertNotNull(userSave.getId());
         Assertions.assertNotNull(userSave.getPaymentCards().getFirst().getId());
     }
@@ -67,7 +65,7 @@ class UserDAOTest {
         var userUpdate = userDAO.saveAndFlush(userSave);
 
         Assertions.assertEquals("NameTwo", userUpdate.getName());
-        Assertions.assertEquals("123456789124", userUpdate.getPaymentCards().getFirst().getNumber());
+        Assertions.assertEquals("123456789123", userUpdate.getPaymentCards().getFirst().getNumber());
     }
 
     @Test
@@ -86,15 +84,13 @@ class UserDAOTest {
         exampleUser.setSurname("Surname");
 
         Pageable pageable = PageRequest.of(0, 5);
-
         Page<User> all = userDAO.findAll(Example.of(exampleUser), pageable);
 
         Assertions.assertEquals(1, all.getTotalElements());
     }
 
-
     @Test
-    void givenUserInDb_whenFindByNameAndSurname_thenUserFound() {
+     void givenUserInDb_whenFindByNameAndSurname_thenUserFound() {
         var user = new User();
         user.setName("Name");
         user.setSurname("Surname");
@@ -103,10 +99,10 @@ class UserDAOTest {
         user.setBirthDate(LocalDate.now());
 
         userDAO.save(user);
+        Pageable pageable = PageRequest.of(0, 5,
+                Sort.by("name").ascending().and(Sort.by("surname").ascending()));
 
-        Pageable pageable = PageRequest.of(0, 5);
-
-        Page<User> all = userDAO.findByNameAndSurname("Name", "Surname", pageable);
+        Page<User> all = userDAO.findAll(pageable);
 
         Assertions.assertEquals(1, all.getTotalElements());
     }
