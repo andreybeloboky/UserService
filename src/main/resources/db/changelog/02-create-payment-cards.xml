@@ -33,6 +33,7 @@
 
         <addForeignKeyConstraint baseTableName="payment_cards" baseColumnNames="user_id" constraintName="fk_cards_user"
                                  referencedTableName="users"
-                                 referencedColumnNames="id"/>
+                                 referencedColumnNames="id"
+                                 deleteCascade="true"/>
     </changeSet>
 </databaseChangeLog>

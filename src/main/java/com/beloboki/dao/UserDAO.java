@@ -9,16 +9,9 @@ public interface UserDAO {
 
     void save(User user);
 
-    void createCard(PaymentCard card);
-
     User retrieveUserById(Long id);
-
-    List<PaymentCard> retrieveAllCardsByUserId(Long userId);
 
     void updateUserById(User user, Long id);
 
     void userStatus(Boolean status);
-
-    void cardStatus(Boolean status);
-
 }
