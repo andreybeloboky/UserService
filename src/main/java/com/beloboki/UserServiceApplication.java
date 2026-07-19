@@ -1,4 +1,4 @@
-package com.beloboki;
+package com.beloboki.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
