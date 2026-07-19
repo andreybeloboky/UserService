@@ -1,4 +1,3 @@
 package com.beloboki.service;
 
-public class PaymentCardService {
-}
+public class PaymentCardService {}

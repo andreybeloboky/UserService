@@ -1,10 +1,10 @@
 package com.beloboki.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 public class UserRequest {
@@ -23,6 +23,7 @@ public class UserRequest {
 
     @JsonProperty
     @NotBlank(message = "Email shouldn't be empty")
+    @Email
     private String email;
 
     @JsonProperty

@@ -3,21 +3,21 @@ package com.beloboki;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @DataJpaTest
-class UserDAOTest {
+class DAOTest {
 
-    @Autowired
-    private UserDAO userDAO;
+    @Autowired private UserDAO userDAO;
 
     @Test
     void givenValidUserWithCard_whenSave_thenIdsGenerated() {
@@ -65,7 +65,8 @@ class UserDAOTest {
         var userUpdate = userDAO.saveAndFlush(userSave);
 
         Assertions.assertEquals("NameTwo", userUpdate.getName());
-        Assertions.assertEquals("123456789123", userUpdate.getPaymentCards().getFirst().getNumber());
+        Assertions.assertEquals(
+                "123456789123", userUpdate.getPaymentCards().getFirst().getNumber());
     }
 
     @Test
@@ -90,7 +91,7 @@ class UserDAOTest {
     }
 
     @Test
-     void givenUserInDb_whenFindByNameAndSurname_thenUserFound() {
+    void givenUserInDb_whenFindByNameAndSurname_thenUserFound() {
         var user = new User();
         user.setName("Name");
         user.setSurname("Surname");
@@ -99,11 +100,53 @@ class UserDAOTest {
         user.setBirthDate(LocalDate.now());
 
         userDAO.save(user);
-        Pageable pageable = PageRequest.of(0, 5,
-                Sort.by("name").ascending().and(Sort.by("surname").ascending()));
+        Pageable pageable =
+                PageRequest.of(
+                        0, 5, Sort.by("name").ascending().and(Sort.by("surname").ascending()));
 
         Page<User> all = userDAO.findAll(pageable);
-
         Assertions.assertEquals(1, all.getTotalElements());
+    }
+
+    @Test
+    void givenUserInDb_whenFindByNameNamedMethod_thenUserFound() {
+        var user = new User();
+        user.setName("Name");
+        user.setSurname("Surname");
+        user.setEmail("example@gmail.com");
+        user.setActive(true);
+        user.setBirthDate(LocalDate.now());
+        userDAO.save(user);
+
+        Optional<User> foundUser = userDAO.findUserByName("Name");
+        Assertions.assertEquals("Name", foundUser.get().getName());
+    }
+
+    @Test
+    void givenUserInDb_whenFindBySurnameNativeSQL_thenUserFound() {
+        var user = new User();
+        user.setName("Name");
+        user.setSurname("Surname");
+        user.setEmail("example@gmail.com");
+        user.setActive(true);
+        user.setBirthDate(LocalDate.now());
+        userDAO.save(user);
+
+        Optional<User> foundUser = userDAO.findUserBySurname("Surname");
+        Assertions.assertEquals("Surname", foundUser.get().getSurname());
+    }
+
+    @Test
+    void givenUserInDb_whenFindByIdJPQL_thenUserFound() {
+        var user = new User();
+        user.setName("Name");
+        user.setSurname("Surname");
+        user.setEmail("example@gmail.com");
+        user.setActive(true);
+        user.setBirthDate(LocalDate.now());
+        userDAO.save(user);
+
+        Optional<User> foundUser = userDAO.findUserById(user.getId());
+        Assertions.assertEquals("Surname", foundUser.get().getSurname());
     }
 }
