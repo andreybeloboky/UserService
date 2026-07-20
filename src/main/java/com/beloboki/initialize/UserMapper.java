@@ -11,6 +11,6 @@ public interface UserMapper {
 
     User userRequestToUser(UserRequest userRequest);
 
-    @Mapping(target = "paymentCard", source = "paymentCards")
+    @Mapping(target = "paymentCards", source = "paymentCards")
     UserResponse userToUserResponse(User user);
 }

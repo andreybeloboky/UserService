@@ -1,35 +1,50 @@
 package com.beloboki.service;
 
 import com.beloboki.dao.PaymentCardDAO;
+import com.beloboki.dao.UserDAO;
 import com.beloboki.model.PaymentCard;
+import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
+    private final UserDAO userDAO;
 
-    @Autowired
-    public PaymentCardService(PaymentCardDAO paymentCardDAO) {
-        this.paymentCardDAO = paymentCardDAO;
+    public void save(PaymentCard paymentCard, Long id) {
+        User user = userDAO.findById(id)
+                        .orElseThrow(
+                                () -> new EntityNotFoundException("Not found user by id = " + id));
+
+        if (user.getPaymentCards().size() < 5) {
+            user.getPaymentCards().add(paymentCard);
+        } else {
+            throw new IllegalArgumentException("User with " + id + " has cards limit 5/5");
+        }
+        userDAO.saveAndFlush(user);
     }
 
-    public PaymentCard savePaymentCard(PaymentCard paymentCard) {
-        return paymentCardDAO.saveAndFlush(paymentCard);
+    public List<PaymentCard> retrieveAllCardsByUserId(Long id) {
+        return paymentCardDAO.findAllCardByUserId(id);
     }
 
-    public PaymentCard retrievePaymentCardById(Long id) {
-        return paymentCardDAO.findById(id)
+    public PaymentCard retrieveById(Long id) {
+        return paymentCardDAO
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
     }
 
     @Transactional
-    public PaymentCard updatePaymentCardById(Long id, PaymentCard paymentCard) {
+    public PaymentCard updateById(Long id, PaymentCard paymentCard) {
         var cardById =
-                paymentCardDAO.findById(id)
+                paymentCardDAO
+                        .findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 
@@ -37,20 +52,18 @@ public class PaymentCardService {
         return paymentCardDAO.save(paymentCard);
     }
 
-    public PaymentCard setStatusPaymentCard(Long id) {
+    public PaymentCard setStatus(Long id, Boolean status) {
         var cardById =
-                paymentCardDAO.findById(id)
+                paymentCardDAO
+                        .findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 
-        Boolean meaning = cardById.getActive();
-        cardById.setActive(!meaning);
+        cardById.setActive(status);
         return paymentCardDAO.save(cardById);
     }
 
-    @Transactional
-    public Boolean deletePaymentCardById(Long id) {
-        return paymentCardDAO.deleteByPaymentCardId(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
+    public void deleteById(Long id) {
+        paymentCardDAO.deleteById(id);
     }
 }

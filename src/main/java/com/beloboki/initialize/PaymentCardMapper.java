@@ -5,7 +5,7 @@ import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.model.PaymentCard;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PaymentCardMapper {
 
     PaymentCardResponse cardToCardResponse(PaymentCard card);

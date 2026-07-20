@@ -7,11 +7,11 @@ public class UserSpecifications {
 
     public static Specification<User> hasName(String name) {
         return ((root, query, criteriaBuilder) ->
-                name == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("name"), name));
+                criteriaBuilder.equal(root.get("name"), name));
     }
 
     public static Specification<User> hasSurname(String surname) {
         return ((root, query, criteriaBuilder) ->
-                surname == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("surname"), surname));
+                criteriaBuilder.equal(root.get("surname"), surname));
     }
 }

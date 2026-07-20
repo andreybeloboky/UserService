@@ -29,8 +29,4 @@ public class PaymentCardRequest {
     @JsonProperty
     @NotBlank(message = "Card status shouldn't be empty")
     private Boolean active;
-
-    @JsonProperty
-    @NotBlank(message = "User_id shouldn't be empty")
-    private Long userId;
 }

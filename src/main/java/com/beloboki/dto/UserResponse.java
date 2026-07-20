@@ -25,5 +25,5 @@ public class UserResponse {
 
     @JsonProperty private LocalDateTime updatedAt;
 
-    @JsonProperty private List<PaymentCardResponse> paymentCard;
+    @JsonProperty private List<PaymentCardResponse> paymentCards;
 }

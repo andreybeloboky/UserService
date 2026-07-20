@@ -2,57 +2,48 @@ package com.beloboki.service;
 
 import com.beloboki.dao.UserDAO;
 import com.beloboki.initialize.UserSpecifications;
-import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserDAO userDAO;
+    private static final Integer PAGE_NUMBER = 0;
+    private static final Integer PAGE_SIZE = 10;
 
-    @Autowired
-    public UserService(UserDAO dao) {
-        this.userDAO = dao;
-    }
-
-    public User saveUser(User user) {
+    public User save(User user) {
         return userDAO.saveAndFlush(user);
     }
 
-    public User retrieveUserById(Long id) {
-        return userDAO.findUserById(id)
+    public User retrieveById(Long id) {
+        return userDAO.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
     }
 
-    public Page<User> retrieveUsersFilterByNameAndSurname(String name, String surname) {
-        Pageable pageable = PageRequest.of(0, 10,
-                Sort.by("name").ascending().and(Sort.by("surname").ascending()));
+    public Page<User> retrieveFilterByNameAndSurname(String name, String surname) {
+        if(name == null || surname == null){
+            throw new IllegalArgumentException("Name filter must not be null");
+        }
 
-        return userDAO.findAll(Specification.where(UserSpecifications.hasName(name))
-                .and(UserSpecifications.hasSurname(surname)), pageable);
+        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
+
+        return userDAO.findAll(
+                Specification.where(UserSpecifications.hasName(name))
+                        .and(UserSpecifications.hasSurname(surname)),
+                pageable);
     }
 
-    public List<PaymentCard> retrieveAllCardByUserId(Long id) {
-        User user = userDAO.findUserById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
-        return user.getPaymentCards();
-    }
-
-    @Transactional
-    public User updateUserById(Long id, User user) {
+    public User updateById(Long id, User user) {
         var userById =
-                userDAO.findUserById(id)
+                userDAO.findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 
@@ -60,20 +51,16 @@ public class UserService {
         return userDAO.save(user);
     }
 
-    public User setStatusUser(Long id) {
-        var userById =
-                userDAO.findUserById(id)
+    public User setStatus(Long id, Boolean status) {
+        var userById = userDAO.findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 
-        Boolean meaning = userById.getActive();
-        userById.setActive(!meaning);
+        userById.setActive(status);
         return userDAO.save(userById);
     }
 
-    @Transactional
-    public Boolean deleteUserById(Long id) {
-        return userDAO.deleteByUserId(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
+    public void deleteById(Long id) {
+        userDAO.deleteById(id);
     }
 }
