@@ -1,6 +1,5 @@
 package com.beloboki.dto;
 
-import com.beloboki.model.PaymentCard;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -21,14 +20,4 @@ public class PaymentCardResponse {
     @JsonProperty private LocalDateTime createdAt;
 
     @JsonProperty private LocalDateTime updatedAt;
-
-    public PaymentCardResponse(PaymentCard paymentCard) {
-        this.id = paymentCard.getId();
-        this.number = paymentCard.getNumber();
-        this.holder = paymentCard.getHolder();
-        this.expirationDate = paymentCard.getExpirationDate();
-        this.active = paymentCard.getActive();
-        this.createdAt = paymentCard.getCreatedAt();
-        this.updatedAt = paymentCard.getUpdatedAt();
-    }
 }

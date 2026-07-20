@@ -1,15 +1,12 @@
 package com.beloboki.dao;
 
 import com.beloboki.model.User;
-import org.springframework.data.domain.Page;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.awt.print.Pageable;
-import java.util.Optional;
 
 @Repository
 public interface UserDAO extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
@@ -19,6 +16,6 @@ public interface UserDAO extends JpaRepository<User, Long>, JpaSpecificationExec
 
     Optional<User> findUserByName(String name);
 
-    @Query(value = "SELECT * FROM users u WHERE u.surname = ?", nativeQuery = true)
-    Optional<User> findUserBySurname(@Param("surname") String surname);
+    @Query(value = "DELETE FROM users u WHERE u.id = ?", nativeQuery = true)
+    Optional<Boolean> deleteByUserId(@Param("id") Long id);
 }

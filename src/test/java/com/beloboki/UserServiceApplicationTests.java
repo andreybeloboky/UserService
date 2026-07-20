@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,20 +119,6 @@ class DAOTest {
 
         Optional<User> foundUser = userDAO.findUserByName("Name");
         Assertions.assertEquals("Name", foundUser.get().getName());
-    }
-
-    @Test
-    void givenUserInDb_whenFindBySurnameNativeSQL_thenUserFound() {
-        var user = new User();
-        user.setName("Name");
-        user.setSurname("Surname");
-        user.setEmail("example@gmail.com");
-        user.setActive(true);
-        user.setBirthDate(LocalDate.now());
-        userDAO.save(user);
-
-        Optional<User> foundUser = userDAO.findUserBySurname("Surname");
-        Assertions.assertEquals("Surname", foundUser.get().getSurname());
     }
 
     @Test
