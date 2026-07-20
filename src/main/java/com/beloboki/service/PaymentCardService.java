@@ -18,7 +18,8 @@ public class PaymentCardService {
     private final UserDAO userDAO;
 
     public void save(PaymentCard paymentCard, Long id) {
-        User user = userDAO.findById(id)
+        User user =
+                userDAO.findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 

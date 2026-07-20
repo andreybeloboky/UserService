@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface PaymentCardDAO
         extends JpaRepository<PaymentCard, Long>, JpaSpecificationExecutor<PaymentCard> {
 
-    @Query("SELECT p FROM PaymentCard p WHERE p.user = :id")
-    List<PaymentCard> findAllCardByUserId(@Param("user_id") Long id);
+    @Query("SELECT p FROM PaymentCard p WHERE p.user.id = :id")
+    List<PaymentCard> findAllCardByUserId(@Param("id") Long id);
 }

@@ -1,5 +1,6 @@
 package com.beloboki;
 
+import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.*;
 class DAOTest {
 
     @Autowired private UserDAO userDAO;
+    @Autowired private PaymentCardDAO paymentCardDAO;
 
     @Test
     void givenValidUserWithCard_whenSave_thenIdsGenerated() {
@@ -104,5 +106,51 @@ class DAOTest {
 
         Page<User> all = userDAO.findAll(pageable);
         Assertions.assertEquals(1, all.getTotalElements());
+    }
+
+    @Test
+    void givenUserInDb_whenFindAllCardsById_thenCardsFound() {
+        var user = new User();
+        user.setName("Name");
+        user.setSurname("Surname");
+        user.setEmail("example@gmail.com");
+        user.setActive(true);
+        user.setBirthDate(LocalDate.now());
+
+        PaymentCard paymentCard = new PaymentCard();
+        paymentCard.setUser(user);
+        paymentCard.setActive(true);
+        paymentCard.setHolder("Name Surname");
+        paymentCard.setNumber("123456789123");
+        paymentCard.setExpirationDate(LocalDateTime.now());
+
+        PaymentCard paymentCardTwo = new PaymentCard();
+        paymentCardTwo.setUser(user);
+        paymentCardTwo.setActive(true);
+        paymentCardTwo.setHolder("Name Surname");
+        paymentCardTwo.setNumber("123456789125");
+        paymentCardTwo.setExpirationDate(LocalDateTime.now());
+        user.setPaymentCards(List.of(paymentCard, paymentCardTwo));
+        userDAO.saveAndFlush(user);
+
+        var userTwo = new User();
+        userTwo.setName("Name");
+        userTwo.setSurname("Surname");
+        userTwo.setEmail("example1@gmail.com");
+        userTwo.setActive(true);
+        userTwo.setBirthDate(LocalDate.now());
+
+        PaymentCard paymentCardThree = new PaymentCard();
+        paymentCardThree.setUser(userTwo);
+        paymentCardThree.setActive(true);
+        paymentCardThree.setHolder("Name Surname");
+        paymentCardThree.setNumber("123456789123");
+        paymentCardThree.setExpirationDate(LocalDateTime.now());
+        userTwo.setPaymentCards(List.of(paymentCardThree));
+        userDAO.saveAndFlush(userTwo);
+
+        List<PaymentCard> paymentCards = paymentCardDAO.findAllCardByUserId(user.getId());
+
+        Assertions.assertEquals(2, paymentCards.size());
     }
 }

@@ -29,7 +29,7 @@ public class UserService {
     }
 
     public Page<User> retrieveFilterByNameAndSurname(String name, String surname) {
-        if(name == null || surname == null){
+        if (name == null || surname == null) {
             throw new IllegalArgumentException("Name filter must not be null");
         }
 
@@ -52,7 +52,8 @@ public class UserService {
     }
 
     public User setStatus(Long id, Boolean status) {
-        var userById = userDAO.findById(id)
+        var userById =
+                userDAO.findById(id)
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Not found user by id = " + id));
 
