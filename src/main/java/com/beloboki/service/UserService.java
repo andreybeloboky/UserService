@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -21,6 +23,10 @@ public class UserService {
 
     public User save(User user) {
         return userDAO.saveAndFlush(user);
+    }
+
+    public List<User> retrieveAllUsers() {
+        return userDAO.findAll();
     }
 
     public User retrieveById(Long id) {

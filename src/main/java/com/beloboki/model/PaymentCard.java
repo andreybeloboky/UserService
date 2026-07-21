@@ -32,11 +32,11 @@ public class PaymentCard {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
-    @Column(name = "createdAt")
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

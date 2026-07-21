@@ -4,9 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @Data
+@JsonPropertyOrder({
+        "id",
+        "name",
+        "surname",
+        "birthDate",
+        "email",
+        "active",
+        "createdAt",
+        "updatedAt",
+        "paymentCards"
+})
 public class UserResponse {
 
     @JsonProperty private Long id;
