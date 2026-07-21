@@ -49,9 +49,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
-        User saveUser = userService.save(user);
+        userService.save(user);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userMapper.userToUserResponse(saveUser));
+                .build();
     }
 
     @PutMapping("/{id}")

@@ -66,15 +66,15 @@ public class PaymentCardController {
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
-        PaymentCard updateCard = paymentCardService.updateById(cardId, paymentCard);
-        return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(updateCard));
+        paymentCardService.updateById(cardId, paymentCard);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/payment-cards/{id}/status")
     public ResponseEntity<PaymentCardResponse> updateStatus(
             @PathVariable("id") Long cardId, @RequestParam("status") Boolean status) {
-        PaymentCard paymentCard = paymentCardService.updateStatus(cardId, status);
-        return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(paymentCard));
+        paymentCardService.updateStatus(cardId, status);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/payment-cards/{id}")

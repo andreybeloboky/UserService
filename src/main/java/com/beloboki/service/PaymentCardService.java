@@ -7,7 +7,9 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
@@ -47,24 +49,24 @@ public class PaymentCardService {
 
     @Caching(
             evict = {
-                @CacheEvict(key = "#id"),
-                @CacheEvict(cacheNames = "users", key = "#result.user.id")
+                    @CacheEvict(key = "#id"),
+                    @CacheEvict(cacheNames = "users", key = "#result.user.id")
             })
-    public PaymentCard updateById(Long id, PaymentCard paymentCard) {
+    public void updateById(Long id, PaymentCard paymentCard) {
         var card = findCardById(id);
 
         paymentCard.setUser(card.getUser());
         paymentCard.setId(card.getId());
-        return paymentCardDAO.saveAndFlush(paymentCard);
+        paymentCardDAO.saveAndFlush(paymentCard);
     }
 
     @CacheEvict(key = "#id")
-    public PaymentCard updateStatus(Long id, Boolean status) {
+    public void updateStatus(Long id, Boolean status) {
         var card = findCardById(id);
 
         card.setActive(status);
         card.setId(card.getId());
-        return paymentCardDAO.save(card);
+        paymentCardDAO.save(card);
     }
 
     @CacheEvict(key = "#id")

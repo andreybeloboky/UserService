@@ -1,4 +1,4 @@
-package com.beloboki;
+package com.beloboki.config;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;

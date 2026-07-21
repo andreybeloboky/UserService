@@ -23,8 +23,8 @@ public class UserService {
     private final UserDAO userDAO;
 
     @CachePut(key = "#result.id")
-    public User save(User user) {
-        return userDAO.saveAndFlush(user);
+    public void save(User user) {
+        userDAO.saveAndFlush(user);
     }
 
     @Cacheable(key = "#id")
@@ -37,16 +37,16 @@ public class UserService {
     }
 
     @CachePut(key = "#id")
-    public User updateById(Long id, User user) {
+    public void updateById(Long id, User user) {
         user.setId(retrieveById(id).getId());
-        return userDAO.save(user);
+        userDAO.save(user);
     }
 
     @CachePut(key = "#id")
-    public User updateStatus(Long id, Boolean status) {
+    public void updateStatus(Long id, Boolean status) {
         var userById = retrieveById(id);
         userById.setActive(status);
-        return userDAO.save(userById);
+        userDAO.save(userById);
     }
 
     @CacheEvict(key = "#id")
