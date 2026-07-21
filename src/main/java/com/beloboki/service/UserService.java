@@ -22,8 +22,9 @@ public class UserService {
         return userDAO.saveAndFlush(user);
     }
 
-    public List<User> retrieveAllUsers() {
-        return userDAO.findAll();
+    public Page<User> retrieveAllUsers(Integer pageNumber,Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return userDAO.findAll(pageable);
     }
 
     public User retrieveById(Long id) {

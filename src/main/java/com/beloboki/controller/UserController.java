@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @GetMapping
     public ResponseEntity<Page<UserResponse>> retrieveFilterNameAndSurnameUsers(
@@ -34,27 +35,25 @@ public class UserController {
             Page<User> users =
                     userService.retrieveFilterByNameAndSurname(name, surname, pageNumber, pageSize);
             Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(userResponses);
+            return ResponseEntity.ok().body(userResponses);
         } else {
-            List<User> users = userService.retrieveAllUsers();
-            Page<User> page = new PageImpl<>(users);
-            Page<UserResponse> userResponses = page.map(userMapper::userToUserResponse);
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(userResponses);
+            Page<User> users = userService.retrieveAllUsers(pageNumber, pageSize);
+            Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);
+            return ResponseEntity.ok().body(userResponses);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> retrieveById(@PathVariable("id") Long userId) {
         User user = userService.retrieveById(userId);
-        return ResponseEntity.status(HttpServletResponse.SC_OK)
-                .body(userMapper.userToUserResponse(user));
+        return ResponseEntity.ok().body(userMapper.userToUserResponse(user));
     }
 
     @PostMapping
     public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
         User saveUser = userService.save(user);
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userMapper.userToUserResponse(saveUser));
     }
 
@@ -63,21 +62,19 @@ public class UserController {
             @PathVariable("id") Long id, @Valid @RequestBody UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
         User updatedUser = userService.updateById(id, user);
-        return ResponseEntity.status(HttpServletResponse.SC_OK)
-                .body(userMapper.userToUserResponse(updatedUser));
+        return ResponseEntity.ok().body(userMapper.userToUserResponse(updatedUser));
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<UserResponse> updateStatus(
             @PathVariable("id") Long userId, @RequestParam("status") Boolean status) {
         User user = userService.setStatus(userId, status);
-        return ResponseEntity.status(HttpServletResponse.SC_OK)
-                .body(userMapper.userToUserResponse(user));
+        return ResponseEntity.ok().body(userMapper.userToUserResponse(user));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable("id") Long userId) {
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long userId) {
         userService.deleteById(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

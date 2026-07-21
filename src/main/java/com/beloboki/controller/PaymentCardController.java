@@ -7,10 +7,10 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,20 +31,19 @@ public class PaymentCardController {
                 paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize);
         Page<PaymentCardResponse> cardResponses =
                 paymentCards.map(paymentCardMapper::cardToCardResponse);
-        return ResponseEntity.status(HttpServletResponse.SC_OK).body(cardResponses);
+        return ResponseEntity.ok().body(cardResponses);
     }
 
     @GetMapping("/users/{userId}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @PathVariable("userId") Long userId) {
         List<PaymentCard> paymentCards = paymentCardService.retrieveAllCardsByUserId(userId);
-        List<PaymentCardResponse> paymentCardResponses = new ArrayList<>();
-        for (PaymentCard paymentCard : paymentCards) {
-            PaymentCardResponse paymentCardResponse =
-                    paymentCardMapper.cardToCardResponse(paymentCard);
-            paymentCardResponses.add(paymentCardResponse);
-        }
-        return ResponseEntity.status(HttpServletResponse.SC_OK).body(paymentCardResponses);
+        List<PaymentCardResponse> paymentCardResponses =
+                paymentCards.stream()
+                        .map(paymentCard -> paymentCardMapper.cardToCardResponse(paymentCard))
+                        .toList();
+
+        return ResponseEntity.ok().body(paymentCardResponses);
     }
 
     @PostMapping("/users/{userId}/payment-cards")
@@ -54,7 +53,7 @@ public class PaymentCardController {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
         PaymentCard savePaymentCard = paymentCardService.save(userId, paymentCard);
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(paymentCardMapper.cardToCardResponse(savePaymentCard));
     }
 
@@ -65,16 +64,14 @@ public class PaymentCardController {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
         PaymentCard updateCard = paymentCardService.updateById(cardId, paymentCard);
-        return ResponseEntity.status(HttpServletResponse.SC_OK)
-                .body(paymentCardMapper.cardToCardResponse(updateCard));
+        return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(updateCard));
     }
 
     @PatchMapping("/payment-cards/{id}/status")
     public ResponseEntity<PaymentCardResponse> updateStatus(
             @PathVariable("id") Long cardId, @RequestParam("status") Boolean status) {
         PaymentCard paymentCard = paymentCardService.setStatus(cardId, status);
-        return ResponseEntity.status(HttpServletResponse.SC_OK)
-                .body(paymentCardMapper.cardToCardResponse(paymentCard));
+        return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(paymentCard));
     }
 
     @DeleteMapping("/payment-cards/{id}")
