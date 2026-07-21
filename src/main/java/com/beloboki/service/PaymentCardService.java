@@ -23,7 +23,7 @@ public class PaymentCardService {
     private static final Integer PAGE_NUMBER = 0;
     private static final Integer PAGE_SIZE = 10;
 
-    public Page<PaymentCard> retrieveFilterByNameAndSurname(String holder) {
+    public Page<PaymentCard> retrieveFilterByHolder(String holder) {
         if (holder == null) {
             throw new IllegalArgumentException("Holder must not be null");
         }
