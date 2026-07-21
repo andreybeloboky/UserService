@@ -1,23 +1,32 @@
 package com.beloboki.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
+@JsonPropertyOrder({
+    "id",
+    "number",
+    "holder",
+    "expirationDate",
+    "active",
+    "createdAt",
+    "updatedAt",
+})
 public class PaymentCardResponse {
 
-    @JsonProperty private Long id;
+    private Long id;
 
-    @JsonProperty private String number;
+    private String number;
 
-    @JsonProperty private String holder;
+    private String holder;
 
-    @JsonProperty private LocalDateTime expirationDate;
+    private LocalDateTime expirationDate;
 
-    @JsonProperty private Boolean active;
+    private Boolean active;
 
-    @JsonProperty private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @JsonProperty private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }

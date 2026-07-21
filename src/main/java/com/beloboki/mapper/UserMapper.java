@@ -1,4 +1,4 @@
-package com.beloboki.initialize;
+package com.beloboki.mapper;
 
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;

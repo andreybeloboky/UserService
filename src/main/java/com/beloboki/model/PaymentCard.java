@@ -20,7 +20,7 @@ public class PaymentCard {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number", nullable = false, unique = true)
     private String number;
 
     @Column(name = "holder", nullable = false)

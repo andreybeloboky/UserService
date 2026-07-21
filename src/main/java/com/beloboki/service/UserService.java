@@ -1,17 +1,16 @@
 package com.beloboki.service;
 
 import com.beloboki.dao.UserDAO;
-import com.beloboki.initialize.UserSpecifications;
 import com.beloboki.model.User;
+import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -31,12 +30,15 @@ public class UserService {
 
     public User retrieveById(Long id) {
         return userDAO.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = " + id));
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Not found user by id = %s".formatted(id)));
     }
 
     public Page<User> retrieveFilterByNameAndSurname(String name, String surname) {
         if (name == null || surname == null) {
-            throw new IllegalArgumentException("Name filter must not be null");
+            throw new IllegalArgumentException("Name and surname filter must not be null");
         }
 
         Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
@@ -48,21 +50,12 @@ public class UserService {
     }
 
     public User updateById(Long id, User user) {
-        var userById =
-                userDAO.findById(id)
-                        .orElseThrow(
-                                () -> new EntityNotFoundException("Not found user by id = " + id));
-
-        user.setId(userById.getId());
+        user.setId(retrieveById(id).getId());
         return userDAO.save(user);
     }
 
     public User setStatus(Long id, Boolean status) {
-        var userById =
-                userDAO.findById(id)
-                        .orElseThrow(
-                                () -> new EntityNotFoundException("Not found user by id = " + id));
-
+        var userById = retrieveById(id);
         userById.setActive(status);
         return userDAO.save(userById);
     }

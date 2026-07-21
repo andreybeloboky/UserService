@@ -1,42 +1,40 @@
 package com.beloboki.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @Data
 @JsonPropertyOrder({
-        "id",
-        "name",
-        "surname",
-        "birthDate",
-        "email",
-        "active",
-        "createdAt",
-        "updatedAt",
-        "paymentCards"
+    "id",
+    "name",
+    "surname",
+    "birthDate",
+    "email",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "paymentCards"
 })
 public class UserResponse {
 
-    @JsonProperty private Long id;
+    private Long id;
 
-    @JsonProperty private String name;
+    private String name;
 
-    @JsonProperty private String surname;
+    private String surname;
 
-    @JsonProperty private LocalDate birthDate;
+    private LocalDate birthDate;
 
-    @JsonProperty private String email;
+    private String email;
 
-    @JsonProperty private Boolean active;
+    private Boolean active;
 
-    @JsonProperty private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @JsonProperty private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    @JsonProperty private List<PaymentCardResponse> paymentCards;
+    private List<PaymentCardResponse> paymentCards;
 }

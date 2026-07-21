@@ -14,7 +14,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.*;
 
 @DataJpaTest
-class DAOTest {
+class userDAOTest {
 
     @Autowired private UserDAO userDAO;
     @Autowired private PaymentCardDAO paymentCardDAO;

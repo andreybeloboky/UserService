@@ -1,4 +1,4 @@
-package com.beloboki.initialize;
+package com.beloboki.specification;
 
 import com.beloboki.model.User;
 import org.springframework.data.jpa.domain.Specification;
