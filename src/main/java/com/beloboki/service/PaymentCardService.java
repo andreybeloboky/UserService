@@ -6,7 +6,9 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,15 +22,13 @@ public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
     private final UserDAO userDAO;
-    private static final Integer PAGE_NUMBER = 0;
-    private static final Integer PAGE_SIZE = 10;
 
-    public Page<PaymentCard> retrieveFilterByHolder(String holder) {
-        if (holder == null) {
+    public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
+        if (holder.isBlank()) {
             throw new IllegalArgumentException("Holder must not be null");
         }
 
-        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return paymentCardDAO.findAll(
                 Specification.where(PaymentCardSpecifications.hasHolder(holder)), pageable);
     }

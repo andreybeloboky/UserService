@@ -25,8 +25,10 @@ public class PaymentCardController {
 
     @GetMapping("/filter")
     public ResponseEntity<Page<PaymentCardResponse>> retrieveFilterByNameAndSurname(
-            @RequestParam String holder) {
-        Page<PaymentCard> paymentCards = paymentCardService.retrieveFilterByHolder(holder);
+            @RequestParam String holder,
+            @RequestParam int pageNumber,
+            @RequestParam int pageSize) {
+        Page<PaymentCard> paymentCards = paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize);
         Page<PaymentCardResponse> cardResponses =
                 paymentCards.map(paymentCardMapper::cardToCardResponse);
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(cardResponses);
