@@ -6,9 +6,7 @@ import com.beloboki.mapper.PaymentCardMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
 import jakarta.validation.Valid;
-
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -35,6 +33,12 @@ public class PaymentCardController {
         return ResponseEntity.ok().body(cardResponses);
     }
 
+    @GetMapping("/payment-cards/{id}")
+    public ResponseEntity<PaymentCardResponse> retrieveById(@PathVariable("id") Long id) {
+        var paymentCard = paymentCardService.retrieveById(id);
+        return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(paymentCard));
+    }
+
     @GetMapping("/users/{userId}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @PathVariable("userId") Long userId) {
@@ -52,9 +56,8 @@ public class PaymentCardController {
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
-        PaymentCard savePaymentCard = paymentCardService.save(userId, paymentCard);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(paymentCardMapper.cardToCardResponse(savePaymentCard));
+        paymentCardService.save(userId, paymentCard);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/payment-cards/{id}")
@@ -70,7 +73,7 @@ public class PaymentCardController {
     @PatchMapping("/payment-cards/{id}/status")
     public ResponseEntity<PaymentCardResponse> updateStatus(
             @PathVariable("id") Long cardId, @RequestParam("status") Boolean status) {
-        PaymentCard paymentCard = paymentCardService.setStatus(cardId, status);
+        PaymentCard paymentCard = paymentCardService.updateStatus(cardId, status);
         return ResponseEntity.ok().body(paymentCardMapper.cardToCardResponse(paymentCard));
     }
 

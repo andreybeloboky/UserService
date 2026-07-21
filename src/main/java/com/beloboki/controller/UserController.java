@@ -26,11 +26,11 @@ public class UserController {
     public ResponseEntity<Page<UserResponse>> retrieveFilterNameAndSurnameUsers(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "surname", required = false) String surname,
-            @RequestParam(value = "page", required = false) Integer pageNumber,
-            @RequestParam(value = "size", required = false) Integer pageSize) {
+            @RequestParam(value = "page") Integer pageNumber,
+            @RequestParam(value = "size") Integer pageSize) {
         if ((name != null && !name.isBlank()) || (surname != null && !surname.isBlank())) {
             Page<User> users =
-                    userService.retrieveFilterByNameAndSurname(name, surname, pageNumber, pageSize);
+                    userService.retrieveFilterNameAndSurname(name, surname, pageNumber, pageSize);
             Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);
             return ResponseEntity.ok().body(userResponses);
         } else {
@@ -65,7 +65,7 @@ public class UserController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<UserResponse> updateStatus(
             @PathVariable("id") Long userId, @RequestParam("status") Boolean status) {
-        User user = userService.setStatus(userId, status);
+        User user = userService.updateStatus(userId, status);
         return ResponseEntity.ok().body(userMapper.userToUserResponse(user));
     }
 

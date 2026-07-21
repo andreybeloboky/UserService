@@ -9,6 +9,7 @@ import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,23 +18,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@CacheConfig(cacheNames = "payment_cards")
 public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
     private final UserDAO userDAO;
     private static final Integer CARD_LIMIT = 5;
 
-    public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
-        if (holder != null && !holder.isBlank()) {
-            throw new IllegalArgumentException("Holder must not be null");
-        }
-
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return paymentCardDAO.findAll(
-                Specification.where(PaymentCardSpecifications.hasHolder(holder)), pageable);
-    }
-
-    public PaymentCard save(Long userId, PaymentCard paymentCard) {
+    public void save(Long userId, PaymentCard paymentCard) {
         var user = findUserById(userId, paymentCard);
 
         if (user.getPaymentCards().size() < CARD_LIMIT) {
@@ -42,22 +34,32 @@ public class PaymentCardService {
             throw new CardLimitException("User with %s has cards limit 5/5".formatted(userId));
         }
         userDAO.saveAndFlush(user);
-        return paymentCard;
+    }
+
+    @Cacheable(key = "#id")
+    public PaymentCard retrieveById(Long id) {
+        return findCardById(id);
     }
 
     public List<PaymentCard> retrieveAllCardsByUserId(Long id) {
         return paymentCardDAO.findAllCardByUserId(id);
     }
 
+    @Caching(
+            evict = {
+                @CacheEvict(key = "#id"),
+                @CacheEvict(cacheNames = "users", key = "#result.user.id")
+            })
     public PaymentCard updateById(Long id, PaymentCard paymentCard) {
         var card = findCardById(id);
 
         paymentCard.setUser(card.getUser());
         paymentCard.setId(card.getId());
-        return paymentCardDAO.save(paymentCard);
+        return paymentCardDAO.saveAndFlush(paymentCard);
     }
 
-    public PaymentCard setStatus(Long id, Boolean status) {
+    @CacheEvict(key = "#id")
+    public PaymentCard updateStatus(Long id, Boolean status) {
         var card = findCardById(id);
 
         card.setActive(status);
@@ -65,8 +67,19 @@ public class PaymentCardService {
         return paymentCardDAO.save(card);
     }
 
+    @CacheEvict(key = "#id")
     public void deleteById(Long id) {
         paymentCardDAO.deleteById(id);
+    }
+
+    public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
+        if (holder == null || holder.isBlank()) {
+            throw new IllegalArgumentException("Holder must not be null");
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return paymentCardDAO.findAll(
+                Specification.where(PaymentCardSpecifications.hasHolder(holder)), pageable);
     }
 
     private User findUserById(Long userId, PaymentCard paymentCard) {
