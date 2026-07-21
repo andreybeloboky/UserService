@@ -20,11 +20,12 @@ public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
     private final UserDAO userDAO;
-    private static final Integer PAGE_NUMBER = 0;
+    private static final Integer PAGE_NUMBER = 0; // пользовател оптарвляет
     private static final Integer PAGE_SIZE = 10;
+    private static final Integer CARD_LIMIT = 5;
 
     public Page<PaymentCard> retrieveFilterByHolder(String holder) {
-        if (holder == null) {
+        if (!holder.isBlank()) {
             throw new IllegalArgumentException("Holder must not be null");
         }
 
@@ -36,7 +37,7 @@ public class PaymentCardService {
     public PaymentCard save(Long userId, PaymentCard paymentCard) {
         var user = findUserById(userId, paymentCard);
 
-        if (user.getPaymentCards().size() < 5) {
+        if (user.getPaymentCards().size() < CARD_LIMIT) {
             user.getPaymentCards().add(paymentCard);
         } else {
             throw new IllegalArgumentException(

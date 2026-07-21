@@ -4,7 +4,9 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +39,7 @@ public class UserService {
     }
 
     public Page<User> retrieveFilterByNameAndSurname(String name, String surname) {
-        if (name == null || surname == null) {
+        if (!name.isBlank() || !surname.isBlank()) {
             throw new IllegalArgumentException("Name and surname filter must not be null");
         }
 

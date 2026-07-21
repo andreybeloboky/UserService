@@ -7,17 +7,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-@JsonPropertyOrder({
-    "id",
-    "name",
-    "surname",
-    "birthDate",
-    "email",
-    "active",
-    "createdAt",
-    "updatedAt",
-    "paymentCards"
-})
 public class UserResponse {
 
     private Long id;

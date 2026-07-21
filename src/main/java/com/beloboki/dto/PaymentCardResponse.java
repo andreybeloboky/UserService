@@ -5,15 +5,6 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-@JsonPropertyOrder({
-    "id",
-    "number",
-    "holder",
-    "expirationDate",
-    "active",
-    "createdAt",
-    "updatedAt",
-})
 public class PaymentCardResponse {
 
     private Long id;
