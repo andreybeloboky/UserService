@@ -6,7 +6,9 @@ import com.beloboki.mapper.PaymentCardMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
 import jakarta.validation.Valid;
+
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -41,7 +43,6 @@ public class PaymentCardController {
                 paymentCards.stream()
                         .map(paymentCard -> paymentCardMapper.cardToCardResponse(paymentCard))
                         .toList();
-
         return ResponseEntity.ok().body(paymentCardResponses);
     }
 

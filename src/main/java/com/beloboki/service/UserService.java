@@ -4,7 +4,6 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +21,7 @@ public class UserService {
         return userDAO.saveAndFlush(user);
     }
 
-    public Page<User> retrieveAllUsers(Integer pageNumber,Integer pageSize) {
+    public Page<User> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return userDAO.findAll(pageable);
     }
