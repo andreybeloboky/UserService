@@ -5,7 +5,6 @@ import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.mapper.PaymentCardMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
