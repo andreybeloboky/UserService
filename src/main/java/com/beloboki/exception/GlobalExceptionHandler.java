@@ -1,14 +1,13 @@
 package com.beloboki.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.LocalDateTime;
 
 @ControllerAdvice
 @Slf4j
@@ -35,10 +34,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            IllegalArgumentException.class,
-            IllegalStateException.class,
-            MethodArgumentNotValidException.class,
-            CardLimitException.class
+        IllegalArgumentException.class,
+        IllegalStateException.class,
+        MethodArgumentNotValidException.class,
+        CardLimitException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception e) {
         log.error("Handle IllegalArgumentException", e);

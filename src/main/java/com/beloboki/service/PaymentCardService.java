@@ -7,9 +7,7 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +21,7 @@ public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
     private final UserDAO userDAO;
+    private static final Integer CARD_LIMIT = 5;
 
     public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
         if (holder != null && !holder.isBlank()) {
@@ -37,11 +36,10 @@ public class PaymentCardService {
     public PaymentCard save(Long userId, PaymentCard paymentCard) {
         var user = findUserById(userId, paymentCard);
 
-        if (user.getPaymentCards().size() < 5) {
+        if (user.getPaymentCards().size() < CARD_LIMIT) {
             user.getPaymentCards().add(paymentCard);
         } else {
-            throw new CardLimitException(
-                    "User with %s has cards limit 5/5".formatted(userId));
+            throw new CardLimitException("User with %s has cards limit 5/5".formatted(userId));
         }
         userDAO.saveAndFlush(user);
         return paymentCard;

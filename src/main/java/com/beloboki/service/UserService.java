@@ -4,9 +4,7 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +34,8 @@ public class UserService {
                                         "Not found user by id = %s".formatted(id)));
     }
 
-    public Page<User> retrieveFilterByNameAndSurname(String name, String surname, int pageNumber, int pageSize) {
+    public Page<User> retrieveFilterByNameAndSurname(
+            String name, String surname, int pageNumber, int pageSize) {
         Specification<User> spec = null;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 

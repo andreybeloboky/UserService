@@ -7,36 +7,36 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
-@RequestMapping("/paymentCard")
+@RequestMapping
 public class PaymentCardController {
 
     private PaymentCardService paymentCardService;
     private PaymentCardMapper paymentCardMapper;
 
-    @GetMapping("/filter")
-    public ResponseEntity<Page<PaymentCardResponse>> retrieveFilterByNameAndSurname(
-            @RequestParam String holder,
-            @RequestParam int pageNumber,
-            @RequestParam int pageSize) {
-        Page<PaymentCard> paymentCards = paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize);
+    @GetMapping("/payment-cards")
+    public ResponseEntity<Page<PaymentCardResponse>> retrieveFilterHolders(
+            @RequestParam(required = false) String holder,
+            @RequestParam(defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        Page<PaymentCard> paymentCards =
+                paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize);
         Page<PaymentCardResponse> cardResponses =
                 paymentCards.map(paymentCardMapper::cardToCardResponse);
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(cardResponses);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{userId}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
-            @PathVariable("id") Long userId) {
+            @PathVariable("userId") Long userId) {
         List<PaymentCard> paymentCards = paymentCardService.retrieveAllCardsByUserId(userId);
         List<PaymentCardResponse> paymentCardResponses = new ArrayList<>();
         for (PaymentCard paymentCard : paymentCards) {
@@ -47,9 +47,9 @@ public class PaymentCardController {
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(paymentCardResponses);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/users/{userId}/payment-cards")
     public ResponseEntity<PaymentCardResponse> save(
-            @PathVariable("id") Long userId,
+            @PathVariable("userId") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
@@ -58,7 +58,7 @@ public class PaymentCardController {
                 .body(paymentCardMapper.cardToCardResponse(savePaymentCard));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/payment-cards/{id}")
     public ResponseEntity<PaymentCardResponse> update(
             @PathVariable("id") Long cardId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
@@ -69,17 +69,17 @@ public class PaymentCardController {
                 .body(paymentCardMapper.cardToCardResponse(updateCard));
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/payment-cards/{id}/status")
     public ResponseEntity<PaymentCardResponse> updateStatus(
-            @PathVariable("id") Long cardId, @PathVariable("status") Boolean status) {
+            @PathVariable("id") Long cardId, @RequestParam("status") Boolean status) {
         PaymentCard paymentCard = paymentCardService.setStatus(cardId, status);
         return ResponseEntity.status(HttpServletResponse.SC_OK)
                 .body(paymentCardMapper.cardToCardResponse(paymentCard));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+    @DeleteMapping("/payment-cards/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         paymentCardService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
