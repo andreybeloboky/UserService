@@ -26,7 +26,8 @@ public class UserController {
 
     @GetMapping("/filter")
     public ResponseEntity<Page<UserResponse>> retrieveFilterByNameAndSurname(
-            @RequestParam("name") String name, @RequestParam("surname") String surname,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "surname", required = false) String surname,
             @RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
         Page<User> users = userService.retrieveFilterByNameAndSurname(name, surname, pageNumber, pageSize);
         Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);

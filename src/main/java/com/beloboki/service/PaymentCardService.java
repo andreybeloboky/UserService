@@ -2,6 +2,7 @@ package com.beloboki.service;
 
 import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dao.UserDAO;
+import com.beloboki.exception.CardLimitException;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
@@ -24,7 +25,7 @@ public class PaymentCardService {
     private final UserDAO userDAO;
 
     public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
-        if (holder.isBlank()) {
+        if (holder != null && !holder.isBlank()) {
             throw new IllegalArgumentException("Holder must not be null");
         }
 
@@ -39,7 +40,7 @@ public class PaymentCardService {
         if (user.getPaymentCards().size() < 5) {
             user.getPaymentCards().add(paymentCard);
         } else {
-            throw new IllegalArgumentException(
+            throw new CardLimitException(
                     "User with %s has cards limit 5/5".formatted(userId));
         }
         userDAO.saveAndFlush(user);

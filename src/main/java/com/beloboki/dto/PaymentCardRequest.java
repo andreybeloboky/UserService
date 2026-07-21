@@ -1,6 +1,7 @@
 package com.beloboki.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -19,9 +20,9 @@ public class PaymentCardRequest {
     @NotBlank(message = "Personal information of holder shouldn't be empty")
     private String holder;
 
-    @NotBlank(message = "Expiration shouldn't be empty")
+    @NotNull(message = "Expiration shouldn't be empty")
     private LocalDateTime expirationDate;
 
-    @NotBlank(message = "Card status shouldn't be empty")
+    @NotNull(message = "Card status shouldn't be empty")
     private Boolean active;
 }

@@ -37,16 +37,26 @@ public class UserService {
     }
 
     public Page<User> retrieveFilterByNameAndSurname(String name, String surname, int pageNumber, int pageSize) {
-        if (name.isBlank() || surname.isBlank()) {
-            throw new IllegalArgumentException("Name and surname filter must not be null");
-        }
-
+        Specification<User> spec = null;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        return userDAO.findAll(
-                Specification.where(UserSpecifications.hasName(name))
-                        .and(UserSpecifications.hasSurname(surname)),
-                pageable);
+        if (name != null && !name.isBlank()) {
+            spec = Specification.where(UserSpecifications.hasName(name));
+        }
+
+        if (surname != null && !surname.isBlank()) {
+            if (spec == null) {
+                spec = Specification.where(UserSpecifications.hasSurname(surname));
+            } else {
+                spec = spec.or(UserSpecifications.hasSurname(surname));
+            }
+        }
+
+        if (spec == null) {
+            return userDAO.findAll(pageable);
+        }
+
+        return userDAO.findAll(spec, pageable);
     }
 
     public User updateById(Long id, User user) {

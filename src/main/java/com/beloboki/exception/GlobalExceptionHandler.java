@@ -35,9 +35,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-        IllegalArgumentException.class,
-        IllegalStateException.class,
-        MethodArgumentNotValidException.class
+            IllegalArgumentException.class,
+            IllegalStateException.class,
+            MethodArgumentNotValidException.class,
+            CardLimitException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception e) {
         log.error("Handle IllegalArgumentException", e);
