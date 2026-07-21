@@ -58,15 +58,15 @@ public class UserController {
     public ResponseEntity<UserResponse> update(
             @PathVariable("id") Long id, @Valid @RequestBody UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
-        User updatedUser = userService.updateById(id, user);
-        return ResponseEntity.ok().body(userMapper.userToUserResponse(updatedUser));
+        userService.updateById(id, user);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<UserResponse> updateStatus(
             @PathVariable("id") Long userId, @RequestParam("status") Boolean status) {
-        User user = userService.updateStatus(userId, status);
-        return ResponseEntity.ok().body(userMapper.userToUserResponse(user));
+        userService.updateStatus(userId, status);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
