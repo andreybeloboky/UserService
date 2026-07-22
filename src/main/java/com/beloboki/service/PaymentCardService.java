@@ -64,11 +64,14 @@ public class PaymentCardService {
 
         card.setActive(status);
         card.setId(card.getId());
-        paymentCardDAO.save(card);
+        paymentCardDAO.saveAndFlush(card);
     }
 
     @CacheEvict(key = "#id")
     public void deleteById(Long id) {
+        if (!paymentCardDAO.existsById(id)) {
+            throw new EntityNotFoundException("User not found with id: %s".formatted(id));
+        }
         paymentCardDAO.deleteById(id);
     }
 

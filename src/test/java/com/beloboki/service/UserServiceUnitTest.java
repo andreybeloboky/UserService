@@ -52,15 +52,15 @@ public class UserServiceUnitTest {
 
     @Test
     void givenUser_ShouldSaveUser_WhenDataIsValid() {
-        User existingMock = User.builder().id(1L).name("Andrei").build();
-        userService.save(existingMock);
+        User userMock = User.builder().id(1L).name("Andrei").build();
+        userService.save(userMock);
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
         verify(userDAO).saveAndFlush(userCaptor.capture());
         User user = userCaptor.getValue(); // maybe it's unnecessary
         Assertions.assertNotNull(user);
         Assertions.assertEquals("Andrei", user.getName());
-        verify(userDAO, times(1)).saveAndFlush(userCaptor.capture());
+        verify(userDAO, times(1)).saveAndFlush(user);
     }
 
     @Test
@@ -83,10 +83,9 @@ public class UserServiceUnitTest {
 
     @Test
     void givenUser_ShouldThrowException_WhenUserToUpdateNotFound() {
-        User existingMock = User.builder().id(1L).name("Andrei").build();
-
         Assertions.assertThrows(
-                EntityNotFoundException.class, () -> userService.updateById(2L, existingMock));
+                EntityNotFoundException.class, () -> userService.updateById(2L,
+                        User.builder().id(1L).name("Andrei").build()));
     }
 
     @Test
@@ -165,6 +164,7 @@ public class UserServiceUnitTest {
      */
 
     @Test
+    @SuppressWarnings("unchecked")
     void givenFilterParameters_ShouldReturnPageFilterUsers_WhenUserExists() {
         List<User> userList =
                 List.of(
@@ -187,6 +187,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void givenFilterParameters_ShouldReturnList_WhenUserHasOnlyName() {
         List<User> userList = List.of(User.builder().id(1L).name("Name").active(false).build());
         Page<User> userPageCreated = new PageImpl<>(userList);
@@ -202,6 +203,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void givenFilterParameters_ShouldReturnList_WhenUserHasOnlySurname() {
         List<User> userList =
                 List.of(User.builder().id(1L).surname("Surname").active(false).build());
