@@ -7,7 +7,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +21,6 @@ public class UserService {
 
     private final UserDAO userDAO;
 
-    @CachePut(key = "#result.id")
     public void save(User user) {
         userDAO.saveAndFlush(user);
     }
@@ -36,21 +34,24 @@ public class UserService {
                                         "Not found user by id = %s".formatted(id)));
     }
 
-    @CachePut(key = "#id")
+    @CacheEvict(key = "#id")
     public void updateById(Long id, User user) {
         user.setId(retrieveById(id).getId());
-        userDAO.save(user);
+        userDAO.saveAndFlush(user);
     }
 
-    @CachePut(key = "#id")
+    @CacheEvict(key = "#id")
     public void updateStatus(Long id, Boolean status) {
         var userById = retrieveById(id);
         userById.setActive(status);
-        userDAO.save(userById);
+        userDAO.saveAndFlush(userById);
     }
 
     @CacheEvict(key = "#id")
     public void deleteById(Long id) {
+        if (!userDAO.existsById(id)) {
+            throw new EntityNotFoundException("User not found with id: %s".formatted(id));
+        }
         userDAO.deleteById(id);
     }
 

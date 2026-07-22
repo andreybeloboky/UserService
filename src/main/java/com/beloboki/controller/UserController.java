@@ -50,8 +50,7 @@ public class UserController {
     public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
         userService.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
