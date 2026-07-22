@@ -1,11 +1,16 @@
 package com.beloboki.service;
 
+import static org.mockito.Mockito.*;
+
 import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.exception.CardLimitException;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,28 +23,21 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class PaymentCardServiceUnitTest {
 
-    @Mock
-    private PaymentCardDAO paymentCardDAO;
+    @Mock private PaymentCardDAO paymentCardDAO;
 
-    @Mock
-    private UserDAO userDAO;
+    @Mock private UserDAO userDAO;
 
-    @InjectMocks
-    private PaymentCardService paymentCardService;
+    @InjectMocks private PaymentCardService paymentCardService;
 
     @Test
     void givenPaymentCardAndUserId_ShouldSavePaymentCard_WhenUserExists() {
-        User userMock = User.builder().id(1L).name("Andrei").paymentCards(new ArrayList<>()).build();
-        PaymentCard paymentCard = PaymentCard.builder().user(userMock).number("12345678222").build();
+        User userMock =
+                User.builder().id(1L).name("Andrei").paymentCards(new ArrayList<>()).build();
+        PaymentCard paymentCard =
+                PaymentCard.builder().user(userMock).number("12345678222").build();
 
         when(userDAO.findById(1L)).thenReturn(Optional.of(userMock));
 
@@ -57,28 +55,42 @@ public class PaymentCardServiceUnitTest {
 
     @Test
     void givenUserId_ShouldThrownException_WhenUserNotExist() {
-        Assertions.assertThrows(EntityNotFoundException.class,
-                () -> paymentCardService.save(1L, PaymentCard.builder().number("111111111111").build()));
+        Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () ->
+                        paymentCardService.save(
+                                1L, PaymentCard.builder().number("111111111111").build()));
     }
 
     @Test
     void givenPaymentCardAndUserId_ShouldThrownExceptionPaymentCard_WhenUserHasLimit() {
-        User userMock = User.builder().id(1L).name("Andrei").paymentCards(List.of(
-                PaymentCard.builder().number("111111111111").build(),
-                PaymentCard.builder().number("222222222222").build(),
-                PaymentCard.builder().number("333333333333").build(),
-                PaymentCard.builder().number("444444444444").build(),
-                PaymentCard.builder().number("555555555555").build())).build();
-        PaymentCard paymentCardLimit = PaymentCard.builder().user(userMock).number("666666666666").build();
+        User userMock =
+                User.builder()
+                        .id(1L)
+                        .name("Andrei")
+                        .paymentCards(
+                                List.of(
+                                        PaymentCard.builder().number("111111111111").build(),
+                                        PaymentCard.builder().number("222222222222").build(),
+                                        PaymentCard.builder().number("333333333333").build(),
+                                        PaymentCard.builder().number("444444444444").build(),
+                                        PaymentCard.builder().number("555555555555").build()))
+                        .build();
+        PaymentCard paymentCardLimit =
+                PaymentCard.builder().user(userMock).number("666666666666").build();
 
         when(userDAO.findById(1L)).thenReturn(Optional.of(userMock));
 
-        Assertions.assertThrows(CardLimitException.class, () -> paymentCardService.save(userMock.getId(), paymentCardLimit));
+        Assertions.assertThrows(
+                CardLimitException.class,
+                () -> paymentCardService.save(userMock.getId(), paymentCardLimit));
     }
 
     @Test
     void givenId_ShouldReturnCard_WhenCardExists() {
-        when(paymentCardDAO.findById(1L)).thenReturn(Optional.of(PaymentCard.builder().id(1L).number("555555555555").build()));
+        when(paymentCardDAO.findById(1L))
+                .thenReturn(
+                        Optional.of(PaymentCard.builder().id(1L).number("555555555555").build()));
 
         PaymentCard paymentCard = paymentCardService.retrieveById(1L);
 
@@ -89,20 +101,22 @@ public class PaymentCardServiceUnitTest {
 
     @Test
     void givenCardId_ShouldThrownException_WhenCardNotExist() {
-        Assertions.assertThrows(EntityNotFoundException.class,
-                () -> paymentCardService.retrieveById(1L));
+        Assertions.assertThrows(
+                EntityNotFoundException.class, () -> paymentCardService.retrieveById(1L));
         verify(paymentCardDAO, times(1)).findById(1L);
     }
 
     @Test
     void givenUserId_ShouldBackAllCards_WhenCardsExist() {
-        List<PaymentCard> paymentCards = List.of(
-                PaymentCard.builder().number("111111111111").build(),
-                PaymentCard.builder().number("222222222222").build());
+        List<PaymentCard> paymentCards =
+                List.of(
+                        PaymentCard.builder().number("111111111111").build(),
+                        PaymentCard.builder().number("222222222222").build());
 
         when(paymentCardDAO.findAllCardByUserId(1L)).thenReturn(paymentCards);
 
-        List<PaymentCard> retrieveAllCardsByUserId = paymentCardService.retrieveAllCardsByUserId(1L);
+        List<PaymentCard> retrieveAllCardsByUserId =
+                paymentCardService.retrieveAllCardsByUserId(1L);
 
         Assertions.assertEquals(2, retrieveAllCardsByUserId.size());
         Assertions.assertEquals("111111111111", retrieveAllCardsByUserId.getFirst().getNumber());
@@ -128,13 +142,16 @@ public class PaymentCardServiceUnitTest {
     @Test
     void givenCard_ShouldThrowException_WhenCardToUpdateNotFound() {
         Assertions.assertThrows(
-                EntityNotFoundException.class, () -> paymentCardService.updateById(2L,
-                        PaymentCard.builder().number("111111111111").build()));
+                EntityNotFoundException.class,
+                () ->
+                        paymentCardService.updateById(
+                                2L, PaymentCard.builder().number("111111111111").build()));
     }
 
     @Test
     void givenCardIdAndNewStatus_ShouldUpdateCardStatus_WhenCardExists() {
-        when(paymentCardDAO.findById(1L)).thenReturn(Optional.of(PaymentCard.builder().id(1L).active(true).build()));
+        when(paymentCardDAO.findById(1L))
+                .thenReturn(Optional.of(PaymentCard.builder().id(1L).active(true).build()));
 
         paymentCardService.updateStatus(1L, false);
 
@@ -156,7 +173,8 @@ public class PaymentCardServiceUnitTest {
     @Test
     void givenCardId_ShouldThrowException_WhenCardToDeleteNotFound() {
         when(paymentCardDAO.existsById(1L)).thenReturn(false);
-        Assertions.assertThrows(EntityNotFoundException.class, () -> paymentCardService.deleteById(1L));
+        Assertions.assertThrows(
+                EntityNotFoundException.class, () -> paymentCardService.deleteById(1L));
     }
 
     @Test
@@ -175,10 +193,10 @@ public class PaymentCardServiceUnitTest {
         verify(paymentCardDAO, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
-
     @Test
     void givenFilterParameters_ShouldReturnThrownException_WhenCardHaveNotHolder() {
-        Assertions.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
                 () -> paymentCardService.retrieveFilterByHolder("", 0, 10));
     }
 }

@@ -84,8 +84,8 @@ public class UserServiceUnitTest {
     @Test
     void givenUser_ShouldThrowException_WhenUserToUpdateNotFound() {
         Assertions.assertThrows(
-                EntityNotFoundException.class, () -> userService.updateById(2L,
-                        User.builder().id(1L).name("Andrei").build()));
+                EntityNotFoundException.class,
+                () -> userService.updateById(2L, User.builder().id(1L).name("Andrei").build()));
     }
 
     @Test
@@ -150,18 +150,6 @@ public class UserServiceUnitTest {
         Assertions.assertEquals(0, users.getTotalElements());
         verify(userDAO, times(1)).findAll(any(Pageable.class));
     }
-
-    /* @ParameterizedTest
-    @CsvSource(value = {"'Name','',0,10",
-            "'','Surname',0,10",
-            "'','',0,10",
-            "'Name', 'Surname', 0,10"})
-    void givenFilterParameters_ShouldReturnPageFilterUsers_WhenUserExists(String name, String surname,
-                                                                          int page, int size) {
-
-    }
-
-     */
 
     @Test
     @SuppressWarnings("unchecked")
