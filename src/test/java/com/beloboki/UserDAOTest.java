@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.*;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-class userDAOTest {
+@ActiveProfiles("test")
+class UserDAOTest {
 
     @Autowired private UserDAO userDAO;
     @Autowired private PaymentCardDAO paymentCardDAO;

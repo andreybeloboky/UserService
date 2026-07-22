@@ -4,8 +4,11 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,20 +17,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@CacheConfig(cacheNames = "users")
 public class UserService {
 
     private final UserDAO userDAO;
-    private static final Integer PAGE_NUMBER = 0;
-    private static final Integer PAGE_SIZE = 10;
 
-    public User save(User user) {
-        return userDAO.saveAndFlush(user);
+    @CachePut(key = "#result.id")
+    public void save(User user) {
+        userDAO.saveAndFlush(user);
     }
 
-    public List<User> retrieveAllUsers() {
-        return userDAO.findAll();
-    }
-
+    @Cacheable(key = "#id")
     public User retrieveById(Long id) {
         return userDAO.findById(id)
                 .orElseThrow(
@@ -36,31 +36,49 @@ public class UserService {
                                         "Not found user by id = %s".formatted(id)));
     }
 
-    public Page<User> retrieveFilterByNameAndSurname(String name, String surname) {
-        if (name == null || surname == null) {
-            throw new IllegalArgumentException("Name and surname filter must not be null");
-        }
-
-        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-
-        return userDAO.findAll(
-                Specification.where(UserSpecifications.hasName(name))
-                        .and(UserSpecifications.hasSurname(surname)),
-                pageable);
-    }
-
-    public User updateById(Long id, User user) {
+    @CachePut(key = "#id")
+    public void updateById(Long id, User user) {
         user.setId(retrieveById(id).getId());
-        return userDAO.save(user);
+        userDAO.save(user);
     }
 
-    public User setStatus(Long id, Boolean status) {
+    @CachePut(key = "#id")
+    public void updateStatus(Long id, Boolean status) {
         var userById = retrieveById(id);
         userById.setActive(status);
-        return userDAO.save(userById);
+        userDAO.save(userById);
     }
 
+    @CacheEvict(key = "#id")
     public void deleteById(Long id) {
         userDAO.deleteById(id);
+    }
+
+    public Page<User> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return userDAO.findAll(pageable);
+    }
+
+    public Page<User> retrieveFilterNameAndSurname(
+            String name, String surname, int pageNumber, int pageSize) {
+        Specification<User> spec = null;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        if (name != null && !name.isBlank()) {
+            spec = Specification.where(UserSpecifications.hasName(name));
+        }
+
+        if (surname != null && !surname.isBlank()) {
+            if (spec == null) {
+                spec = Specification.where(UserSpecifications.hasSurname(surname));
+            } else {
+                spec = spec.or(UserSpecifications.hasSurname(surname));
+            }
+        }
+
+        if (spec == null) {
+            return userDAO.findAll(pageable);
+        }
+        return userDAO.findAll(spec, pageable);
     }
 }
