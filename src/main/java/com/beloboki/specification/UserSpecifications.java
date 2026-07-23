@@ -13,4 +13,7 @@ public class UserSpecifications {
         return ((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("surname"), surname));
     }
+
+    private UserSpecifications() {
+    }
 }
