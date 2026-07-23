@@ -37,6 +37,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_OPTS: "-Djacoco.skip.error.incomplete.app.info=true"
         run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
 
