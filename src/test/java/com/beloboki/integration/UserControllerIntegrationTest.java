@@ -5,7 +5,6 @@ import com.beloboki.dto.UserRequest;
 import com.beloboki.model.User;
 import java.time.LocalDate;
 import java.time.Month;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

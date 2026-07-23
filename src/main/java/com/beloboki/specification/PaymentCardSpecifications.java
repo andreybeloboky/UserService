@@ -10,6 +10,5 @@ public class PaymentCardSpecifications {
                 criteriaBuilder.equal(root.get("holder"), holder));
     }
 
-    private PaymentCardSpecifications() {
-    }
+    private PaymentCardSpecifications() {}
 }

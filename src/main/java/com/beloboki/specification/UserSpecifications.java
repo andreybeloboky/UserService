@@ -14,6 +14,5 @@ public class UserSpecifications {
                 criteriaBuilder.equal(root.get("surname"), surname));
     }
 
-    private UserSpecifications() {
-    }
+    private UserSpecifications() {}
 }

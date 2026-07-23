@@ -10,7 +10,6 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.*;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
