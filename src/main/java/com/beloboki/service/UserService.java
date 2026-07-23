@@ -7,7 +7,7 @@ import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,6 +31,7 @@ public class UserService {
     }
 
     @Cacheable(key = "#id")
+    @Transactional(readOnly = true)
     public UserResponse retrieveById(Long id) {
         User user =
                 userDAO.findById(id)
@@ -39,6 +40,13 @@ public class UserService {
                                         new EntityNotFoundException(
                                                 "Not found user by id = %s".formatted(id)));
         return userMapper.userToUserResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserResponse> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> users = userDAO.findAll(pageable);
+        return users.map(userMapper::userToUserResponse);
     }
 
     @CacheEvict(key = "#id")
@@ -64,12 +72,6 @@ public class UserService {
             throw new EntityNotFoundException("User not found with id: %s".formatted(id));
         }
         userDAO.deleteById(id);
-    }
-
-    public Page<UserResponse> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<User> users = userDAO.findAll(pageable);
-        return users.map(userMapper::userToUserResponse);
     }
 
     public Page<UserResponse> retrieveFilterNameAndSurname(

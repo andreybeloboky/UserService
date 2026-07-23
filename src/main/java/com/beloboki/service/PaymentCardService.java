@@ -10,7 +10,7 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.*;
@@ -44,11 +44,13 @@ public class PaymentCardService {
     }
 
     @Cacheable(key = "#id")
+    @Transactional(readOnly = true)
     public PaymentCardResponse retrieveById(Long id) {
         PaymentCard paymentCard = findCardById(id);
         return paymentCardMapper.cardToCardResponse(paymentCard);
     }
 
+    @Transactional(readOnly = true)
     public List<PaymentCardResponse> retrieveAllCardsByUserId(Long id) {
         List<PaymentCard> paymentCards = paymentCardDAO.findAllCardByUserId(id);
         return paymentCards.stream().map(paymentCardMapper::cardToCardResponse).toList();
