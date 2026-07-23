@@ -3,11 +3,18 @@ package com.beloboki.service;
 import static org.mockito.Mockito.*;
 
 import com.beloboki.dao.UserDAO;
+import com.beloboki.dto.UserRequest;
+import com.beloboki.dto.UserResponse;
+import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,18 +31,47 @@ public class UserServiceUnitTest {
 
     @Mock private UserDAO userDAO;
 
+    @Mock private UserMapper userMapper;
+
     @InjectMocks private UserService userService;
+
+    private UserRequest userRequest;
+
+    private UserResponse userResponse;
+
+    @BeforeEach
+    void setUp() {
+        userRequest = new UserRequest();
+        userRequest.setName("Name");
+        userRequest.setSurname("Surname");
+        userRequest.setBirthDate(LocalDate.of(2000, 7, 21));
+        userRequest.setEmail("test@gmail.com");
+        userRequest.setActive(true);
+
+        userResponse =
+                new UserResponse(
+                        1L,
+                        "Name",
+                        "Surname",
+                        LocalDate.of(2000, 4, 2),
+                        "test@gmail.com",
+                        false,
+                        LocalDateTime.of(2026, 7, 22, 18, 43, 33),
+                        LocalDateTime.of(2026, 7, 22, 18, 43, 33),
+                        new ArrayList<>());
+    }
 
     @Test
     void givenId_ShouldReturnUser_WhenUserExists() {
-        User existingMock = User.builder().id(1L).name("Andrei").build();
+        User existingMock = User.builder().id(1L).name("Name").build();
 
         when(userDAO.findById(1L)).thenReturn(Optional.of(existingMock));
+        when(userMapper.userToUserResponse(existingMock)).thenReturn(userResponse);
 
-        User user = userService.retrieveById(1L);
+        UserResponse user = userService.retrieveById(1L);
 
         Assertions.assertNotNull(user);
-        Assertions.assertEquals("Andrei", user.getName());
+        Assertions.assertEquals("Name", user.name());
         verify(userDAO, times(1)).findById(1L);
     }
 
@@ -52,12 +88,14 @@ public class UserServiceUnitTest {
 
     @Test
     void givenUser_ShouldSaveUser_WhenDataIsValid() {
-        User userMock = User.builder().id(1L).name("Andrei").build();
-        userService.save(userMock);
+        User userTest = User.builder().name("Andrei").build();
+        when(userMapper.userRequestToUser(any(UserRequest.class))).thenReturn(userTest);
+
+        userService.save(userRequest);
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
         verify(userDAO).saveAndFlush(userCaptor.capture());
-        User user = userCaptor.getValue(); // maybe it's unnecessary
+        User user = userCaptor.getValue();
         Assertions.assertNotNull(user);
         Assertions.assertEquals("Andrei", user.getName());
         verify(userDAO, times(1)).saveAndFlush(user);
@@ -69,9 +107,11 @@ public class UserServiceUnitTest {
 
         User updateUser = User.builder().name("Anton").build();
 
+        when(userMapper.userRequestToUser(any(UserRequest.class))).thenReturn(updateUser);
+
         when(userDAO.findById(1L)).thenReturn(Optional.of(existingMock));
 
-        userService.updateById(1L, updateUser);
+        userService.updateById(1L, userRequest);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userDAO).saveAndFlush(userCaptor.capture());
@@ -84,13 +124,12 @@ public class UserServiceUnitTest {
     @Test
     void givenUser_ShouldThrowException_WhenUserToUpdateNotFound() {
         Assertions.assertThrows(
-                EntityNotFoundException.class,
-                () -> userService.updateById(2L, User.builder().id(1L).name("Andrei").build()));
+                EntityNotFoundException.class, () -> userService.updateById(2L, userRequest));
     }
 
     @Test
     void givenUserAndStatus_ShouldUpdateUserStatus_WhenUserExists() {
-        User existingMock = User.builder().id(1L).name("Andrei").active(false).build();
+        User existingMock = User.builder().id(1L).name("Name").active(false).build();
 
         when(userDAO.findById(1L)).thenReturn(Optional.of(existingMock));
 
@@ -119,23 +158,22 @@ public class UserServiceUnitTest {
 
     @Test
     void givenPageParameters_ShouldReturnUserPage_WhenUsersExist() {
-        List<User> userList =
-                List.of(
-                        User.builder().id(1L).name("Andrei").active(false).build(),
-                        User.builder().id(2L).name("Anton").active(false).build());
+        User user = User.builder().id(1L).name("Name").active(false).build();
+
+        List<User> userList = List.of(user);
         Page<User> userPage = new PageImpl<>(userList);
 
         when(userDAO.findAll(any(Pageable.class))).thenReturn(userPage);
+        when(userMapper.userToUserResponse(user)).thenReturn(userResponse);
 
-        Page<User> users = userService.retrieveAllUsers(0, 10);
+        Page<UserResponse> users = userService.retrieveAllUsers(0, 10);
         Assertions.assertNotNull(users);
-        Assertions.assertEquals(2, users.getTotalElements());
+        Assertions.assertEquals(1, users.getTotalElements());
 
-        List<User> usersList = users.stream().toList();
-        Assertions.assertEquals("Andrei", usersList.getFirst().getName());
-        Assertions.assertEquals(false, usersList.getFirst().getActive());
-        Assertions.assertEquals("Anton", usersList.get(1).getName());
-        Assertions.assertEquals(false, usersList.get(1).getActive());
+        List<UserResponse> usersList = users.stream().toList();
+        Assertions.assertEquals("Name", usersList.getFirst().name());
+        Assertions.assertEquals(false, usersList.getFirst().active());
+        verify(userDAO, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -145,7 +183,7 @@ public class UserServiceUnitTest {
 
         when(userDAO.findAll(any(Pageable.class))).thenReturn(userPage);
 
-        Page<User> users = userService.retrieveAllUsers(0, 10);
+        Page<UserResponse> users = userService.retrieveAllUsers(0, 10);
         Assertions.assertNotNull(users);
         Assertions.assertEquals(0, users.getTotalElements());
         verify(userDAO, times(1)).findAll(any(Pageable.class));
@@ -167,7 +205,8 @@ public class UserServiceUnitTest {
         when(userDAO.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(userPageCreated);
 
-        Page<User> userPage = userService.retrieveFilterNameAndSurname("Name", "Surname", 0, 10);
+        Page<UserResponse> userPage =
+                userService.retrieveFilterNameAndSurname("Name", "Surname", 0, 10);
 
         Assertions.assertNotNull(userPage);
         Assertions.assertEquals(userList.size(), userPage.getTotalElements());
@@ -183,7 +222,7 @@ public class UserServiceUnitTest {
         when(userDAO.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(userPageCreated);
 
-        Page<User> userPage = userService.retrieveFilterNameAndSurname("Name", "", 0, 10);
+        Page<UserResponse> userPage = userService.retrieveFilterNameAndSurname("Name", "", 0, 10);
 
         Assertions.assertNotNull(userPage);
         Assertions.assertEquals(userList.size(), userPage.getTotalElements());
@@ -200,7 +239,8 @@ public class UserServiceUnitTest {
         when(userDAO.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(userPageCreated);
 
-        Page<User> userPage = userService.retrieveFilterNameAndSurname("", "Surname", 0, 10);
+        Page<UserResponse> userPage =
+                userService.retrieveFilterNameAndSurname("", "Surname", 0, 10);
 
         Assertions.assertNotNull(userPage);
         Assertions.assertEquals(userList.size(), userPage.getTotalElements());
@@ -214,7 +254,7 @@ public class UserServiceUnitTest {
 
         when(userDAO.findAll(any(Pageable.class))).thenReturn(userPageCreated);
 
-        Page<User> userPage = userService.retrieveFilterNameAndSurname("", "", 0, 10);
+        Page<UserResponse> userPage = userService.retrieveFilterNameAndSurname("", "", 0, 10);
 
         Assertions.assertNotNull(userPage);
         Assertions.assertEquals(0, userPage.getTotalElements());

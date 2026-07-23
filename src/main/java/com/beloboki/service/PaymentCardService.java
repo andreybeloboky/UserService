@@ -2,7 +2,10 @@ package com.beloboki.service;
 
 import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dao.UserDAO;
+import com.beloboki.dto.PaymentCardRequest;
+import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.exception.CardLimitException;
+import com.beloboki.mapper.PaymentCardMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
@@ -23,9 +26,12 @@ public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
     private final UserDAO userDAO;
+    private final PaymentCardMapper paymentCardMapper;
     private static final Integer CARD_LIMIT = 5;
 
-    public void save(Long userId, PaymentCard paymentCard) {
+    public void save(Long userId, PaymentCardRequest paymentCardRequest) {
+        PaymentCard paymentCard =
+                paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
         var user = findUserById(userId, paymentCard);
 
         if (user.getPaymentCards().size() < CARD_LIMIT) {
@@ -37,12 +43,14 @@ public class PaymentCardService {
     }
 
     @Cacheable(key = "#id")
-    public PaymentCard retrieveById(Long id) {
-        return findCardById(id);
+    public PaymentCardResponse retrieveById(Long id) {
+        PaymentCard paymentCard = findCardById(id);
+        return paymentCardMapper.cardToCardResponse(paymentCard);
     }
 
-    public List<PaymentCard> retrieveAllCardsByUserId(Long id) {
-        return paymentCardDAO.findAllCardByUserId(id);
+    public List<PaymentCardResponse> retrieveAllCardsByUserId(Long id) {
+        List<PaymentCard> paymentCards = paymentCardDAO.findAllCardByUserId(id);
+        return paymentCards.stream().map(paymentCardMapper::cardToCardResponse).toList();
     }
 
     @Caching(
@@ -50,12 +58,14 @@ public class PaymentCardService {
                 @CacheEvict(key = "#id"),
                 @CacheEvict(cacheNames = "users", key = "#result.user.id")
             })
-    public void updateById(Long id, PaymentCard paymentCard) {
+    public PaymentCard updateById(Long id, PaymentCardRequest paymentCardRequest) {
+        PaymentCard paymentCard =
+                paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
         var card = findCardById(id);
 
         paymentCard.setUser(card.getUser());
         paymentCard.setId(card.getId());
-        paymentCardDAO.saveAndFlush(paymentCard);
+        return paymentCardDAO.saveAndFlush(paymentCard);
     }
 
     @CacheEvict(key = "#id")
@@ -75,14 +85,17 @@ public class PaymentCardService {
         paymentCardDAO.deleteById(id);
     }
 
-    public Page<PaymentCard> retrieveFilterByHolder(String holder, int pageNumber, int pageSize) {
+    public Page<PaymentCardResponse> retrieveFilterByHolder(
+            String holder, int pageNumber, int pageSize) {
         if (holder == null || holder.isBlank()) {
             throw new IllegalArgumentException("Holder must not be null");
         }
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return paymentCardDAO.findAll(
-                Specification.where(PaymentCardSpecifications.hasHolder(holder)), pageable);
+        Page<PaymentCard> paymentCards =
+                paymentCardDAO.findAll(
+                        Specification.where(PaymentCardSpecifications.hasHolder(holder)), pageable);
+        return paymentCards.map(paymentCardMapper::cardToCardResponse);
     }
 
     private User findUserById(Long userId, PaymentCard paymentCard) {

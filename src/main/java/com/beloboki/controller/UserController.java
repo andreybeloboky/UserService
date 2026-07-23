@@ -2,8 +2,6 @@ package com.beloboki.controller;
 
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
-import com.beloboki.mapper.UserMapper;
-import com.beloboki.model.User;
 import com.beloboki.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping
     public ResponseEntity<Page<UserResponse>> retrieveFilterNameAndSurnameUsers(
@@ -29,40 +26,35 @@ public class UserController {
             @RequestParam(value = "page") Integer pageNumber,
             @RequestParam(value = "size") Integer pageSize) {
         if ((name != null && !name.isBlank()) || (surname != null && !surname.isBlank())) {
-            Page<User> users =
-                    userService.retrieveFilterNameAndSurname(name, surname, pageNumber, pageSize);
-            Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);
-            return ResponseEntity.ok().body(userResponses);
+            return ResponseEntity.ok()
+                    .body(
+                            userService.retrieveFilterNameAndSurname(
+                                    name, surname, pageNumber, pageSize));
         } else {
-            Page<User> users = userService.retrieveAllUsers(pageNumber, pageSize);
-            Page<UserResponse> userResponses = users.map(userMapper::userToUserResponse);
-            return ResponseEntity.ok().body(userResponses);
+            return ResponseEntity.ok().body(userService.retrieveAllUsers(pageNumber, pageSize));
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> retrieveById(@PathVariable("id") Long userId) {
-        User user = userService.retrieveById(userId);
-        return ResponseEntity.ok().body(userMapper.userToUserResponse(user));
+        return ResponseEntity.ok().body(userService.retrieveById(userId));
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
-        User user = userMapper.userRequestToUser(userRequest);
-        userService.save(user);
+    public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userRequest) {
+        userService.save(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(
+    public ResponseEntity<Void> update(
             @PathVariable("id") Long id, @Valid @RequestBody UserRequest userRequest) {
-        User user = userMapper.userRequestToUser(userRequest);
-        userService.updateById(id, user);
+        userService.updateById(id, userRequest);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<UserResponse> updateStatus(
+    public ResponseEntity<Void> updateStatus(
             @PathVariable("id") Long userId, @RequestParam("status") Boolean status) {
         userService.updateStatus(userId, status);
         return ResponseEntity.ok().build();

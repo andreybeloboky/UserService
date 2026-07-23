@@ -16,20 +16,18 @@ import org.testcontainers.utility.DockerImageName;
 public class AbstractIntegrationTest {
 
     @Container
-    protected static final PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:17");
+    private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17");
 
     @Container
-    protected static final RedisContainer redis =
-            new RedisContainer(DockerImageName.parse("redis"));
+    private static final RedisContainer REDIS = new RedisContainer(DockerImageName.parse("redis"));
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
 
-        registry.add("spring.data.redis.host", redis::getHost);
-        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
+        registry.add("spring.data.redis.host", REDIS::getHost);
+        registry.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
     }
 }
