@@ -24,7 +24,7 @@ jobs:
           cache: maven
 
       - name: Run Tests with Coverage
-        run: mvn -B clean test -DargLine="-javaagent:${project.build.directory}/jacoco-agent.jar"
+        run: mvn -B clean test jacoco:report
 
       - name: Debug Jacoco XML
         run: ls -l target/site/jacoco
