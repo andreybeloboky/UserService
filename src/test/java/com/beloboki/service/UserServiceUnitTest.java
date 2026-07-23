@@ -10,6 +10,7 @@ import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,11 +54,11 @@ public class UserServiceUnitTest {
                         1L,
                         "Name",
                         "Surname",
-                        LocalDate.of(2000, 4, 2),
+                        LocalDate.of(2000, Month.APRIL, 2),
                         "test@gmail.com",
                         false,
-                        LocalDateTime.of(2026, 7, 22, 18, 43, 33),
-                        LocalDateTime.of(2026, 7, 22, 18, 43, 33),
+                        LocalDateTime.of(2026, Month.JULY, 22, 18, 43, 33),
+                        LocalDateTime.of(2026, Month.JULY, 22, 18, 43, 33),
                         new ArrayList<>());
     }
 

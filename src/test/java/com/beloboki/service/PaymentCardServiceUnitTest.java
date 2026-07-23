@@ -12,6 +12,7 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,17 +49,17 @@ public class PaymentCardServiceUnitTest {
         request.setHolder("Holder");
         request.setNumber("123456789123");
         request.setActive(false);
-        request.setExpirationDate(LocalDateTime.of(2030, 7, 21, 0, 0));
+        request.setExpirationDate(LocalDateTime.of(2030, Month.JULY, 21, 0, 0));
 
         paymentCardResponse =
                 new PaymentCardResponse(
                         1L,
                         "Name",
                         "1234567891234",
-                        LocalDateTime.of(2030, 5, 5, 0, 0),
+                        LocalDateTime.of(2030, Month.MAY, 5, 0, 0),
                         false,
-                        LocalDateTime.of(2026, 7, 22, 18, 43, 33),
-                        LocalDateTime.of(2026, 7, 22, 18, 43, 33));
+                        LocalDateTime.of(2026, Month.JULY, 22, 18, 43, 33),
+                        LocalDateTime.of(2026, Month.JULY, 22, 18, 43, 33));
     }
 
     @Test
