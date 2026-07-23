@@ -19,6 +19,8 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <maven-compiler-plugin>3.13.0</maven-compiler-plugin>
     <xml-format-maven-plugin>4.3.0</xml-format-maven-plugin>
+    <maven-failsafe-plugin>3.5.0</maven-failsafe-plugin>
+    <jacoco-maven-plugin>0.8.15</jacoco-maven-plugin>
     <sonar.organization>andreybeloboky</sonar.organization>
     <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -146,7 +148,7 @@
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
-              <version>1.6.3</version>
+              <version>${mapstruct.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -213,9 +215,22 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.15</version>
+        <version>${jacoco-maven-plugin}</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
