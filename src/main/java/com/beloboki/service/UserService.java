@@ -7,6 +7,7 @@ import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,6 +42,7 @@ public class UserService {
     }
 
     @CacheEvict(key = "#id")
+    @Transactional
     public void updateById(Long id, UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
         user.setId(retrieveByUserId(id).getId());
@@ -48,6 +50,7 @@ public class UserService {
     }
 
     @CacheEvict(key = "#id")
+    @Transactional
     public void updateStatus(Long id, Boolean status) {
         User userById = retrieveByUserId(id);
         userById.setActive(status);
@@ -55,6 +58,7 @@ public class UserService {
     }
 
     @CacheEvict(key = "#id")
+    @Transactional
     public void deleteById(Long id) {
         if (!userDAO.existsById(id)) {
             throw new EntityNotFoundException("User not found with id: %s".formatted(id));

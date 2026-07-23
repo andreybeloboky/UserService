@@ -5,25 +5,25 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.1.0</version>
-    <relativePath></relativePath>
+    <relativePath/>
   </parent>
   <groupId>com.beloboki</groupId>
   <artifactId>user-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name></name>
-  <description></description>
-  <url></url>
+  <name/>
+  <description/>
+  <url/>
   <licenses>
-    <license></license>
+    <license/>
   </licenses>
   <developers>
-    <developer></developer>
+    <developer/>
   </developers>
   <scm>
-    <connection></connection>
-    <developerConnection></developerConnection>
-    <tag></tag>
-    <url></url>
+    <connection/>
+    <developerConnection/>
+    <tag/>
+    <url/>
   </scm>
   <properties>
     <maven.compiler.release>25</maven.compiler.release>
@@ -201,8 +201,8 @@
                 <include>.gitattributes</include>
                 <include>.gitignore</include>
               </includes>
-              <trimTrailingWhitespace></trimTrailingWhitespace>
-              <endWithNewline></endWithNewline>
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
               <indent>
                 <tabs>true</tabs>
                 <spacesPerTab>4</spacesPerTab>
