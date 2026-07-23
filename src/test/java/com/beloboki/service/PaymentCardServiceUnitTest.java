@@ -148,7 +148,6 @@ public class PaymentCardServiceUnitTest {
         when(paymentCardDAO.findAllCardByUserId(1L)).thenReturn(paymentCards);
 
         when(paymentCardMapper.cardToCardResponse(first)).thenReturn(paymentCardResponse);
-        ;
 
         List<PaymentCardResponse> retrieveAllCardsByUserId =
                 paymentCardService.retrieveAllCardsByUserId(1L);

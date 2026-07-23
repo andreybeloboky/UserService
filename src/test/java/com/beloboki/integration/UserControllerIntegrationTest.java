@@ -4,6 +4,8 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.model.User;
 import java.time.LocalDate;
+import java.time.Month;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
                         User.builder()
                                 .name("Name")
                                 .surname("Surname")
-                                .birthDate(LocalDate.of(2000, 7, 21))
+                                .birthDate(LocalDate.of(2000, Month.JULY, 21))
                                 .email("test@gmail.com")
                                 .active(false)
                                 .build());
@@ -96,7 +98,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
         UserRequest request = new UserRequest();
         request.setName("Name");
         request.setSurname("Surname");
-        request.setBirthDate(LocalDate.of(2000, 7, 21));
+        request.setBirthDate(LocalDate.of(2000, Month.JULY, 21));
         request.setEmail("second@gmail.com");
         request.setActive(true);
 
@@ -113,7 +115,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
         UserRequest request = new UserRequest();
         request.setName("New");
         request.setSurname("New");
-        request.setBirthDate(LocalDate.of(2000, 7, 21));
+        request.setBirthDate(LocalDate.of(2000, Month.JULY, 21));
         request.setEmail("new@mail.com");
         request.setActive(false);
 
@@ -128,7 +130,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
         User updated = userDAO.findById(user.getId()).orElseThrow();
         Assertions.assertEquals("New", updated.getName());
         Assertions.assertEquals("New", updated.getSurname());
-        Assertions.assertEquals(LocalDate.of(2000, 7, 21), updated.getBirthDate());
+        Assertions.assertEquals(LocalDate.of(2000, Month.JULY, 21), updated.getBirthDate());
         Assertions.assertEquals("new@mail.com", updated.getEmail());
         Assertions.assertEquals(false, updated.getActive());
     }
