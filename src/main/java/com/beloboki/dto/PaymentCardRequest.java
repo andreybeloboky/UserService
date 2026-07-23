@@ -9,9 +9,9 @@ public class PaymentCardRequest {
 
     @NotBlank(message = "Card must have a number")
     @Pattern(
-            regexp = "^\\d{13,15}$",
-            message = "Payment card should have number from 13 to 15 numbers")
-    @Size(min = 13, max = 15)
+            regexp = "^\\d{13,19}$",
+            message = "Payment card should have number from 13 to 19 numbers")
+    @Size(min = 13, max = 19)
     private String number;
 
     @NotBlank(message = "Personal information of holder shouldn't be empty")
