@@ -2,7 +2,7 @@ name: Java CI Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ] # Запускается, когда вы делаете git push в эти ветки
+    branches: [ "main", "master" ]
 
 jobs:
   build-and-deploy:
