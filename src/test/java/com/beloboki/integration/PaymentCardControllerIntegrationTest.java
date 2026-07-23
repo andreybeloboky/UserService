@@ -7,6 +7,8 @@ import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,7 @@ public class PaymentCardControllerIntegrationTest extends AbstractIntegrationTes
                         User.builder()
                                 .name("Name")
                                 .surname("Surname")
-                                .birthDate(LocalDate.of(2000, 7, 21))
+                                .birthDate(LocalDate.of(2000, Month.JULY, 21))
                                 .email("test@gmail.com")
                                 .active(false)
                                 .build());
@@ -41,7 +43,7 @@ public class PaymentCardControllerIntegrationTest extends AbstractIntegrationTes
                 paymentCardDAO.save(
                         PaymentCard.builder()
                                 .holder("Name")
-                                .expirationDate(LocalDateTime.of(2030, 7, 21, 0, 0))
+                                .expirationDate(LocalDateTime.of(2030, Month.JULY, 21, 0, 0))
                                 .active(false)
                                 .number("1234567330123456")
                                 .user(user)
@@ -133,7 +135,7 @@ public class PaymentCardControllerIntegrationTest extends AbstractIntegrationTes
         PaymentCardRequest request = new PaymentCardRequest();
         request.setHolder("New Holder");
         request.setNumber("1234567890123456");
-        request.setExpirationDate(LocalDateTime.of(2035, 12, 1, 0, 0));
+        request.setExpirationDate(LocalDateTime.of(2035, Month.DECEMBER, 1, 0, 0));
         request.setActive(true);
 
         webTestClient
@@ -150,7 +152,7 @@ public class PaymentCardControllerIntegrationTest extends AbstractIntegrationTes
         PaymentCardRequest request = new PaymentCardRequest();
         request.setHolder("Updated Holder");
         request.setNumber("1234567890123456");
-        request.setExpirationDate(LocalDateTime.of(2030, 7, 21, 0, 0));
+        request.setExpirationDate(LocalDateTime.of(2030, Month.JULY, 21, 0, 0));
         request.setActive(true);
 
         webTestClient
