@@ -2,9 +2,8 @@ name: Java CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "feature/abjack-1" ]
+    branches: [ "main" , "feature/abjack-1"]
+
 
 jobs:
   build-and-deploy:
