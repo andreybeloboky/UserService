@@ -1,13 +1,16 @@
 package com.beloboki.service;
 
 import com.beloboki.dao.UserDAO;
+import com.beloboki.dto.UserRequest;
+import com.beloboki.dto.UserResponse;
+import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,45 +24,55 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserDAO userDAO;
+    private final UserMapper userMapper;
 
-    @CachePut(key = "#result.id")
-    public void save(User user) {
-        userDAO.saveAndFlush(user);
+    public void save(UserRequest userRequest) {
+        userDAO.saveAndFlush(userMapper.userRequestToUser(userRequest));
     }
 
     @Cacheable(key = "#id")
-    public User retrieveById(Long id) {
-        return userDAO.findById(id)
-                .orElseThrow(
-                        () ->
-                                new EntityNotFoundException(
-                                        "Not found user by id = %s".formatted(id)));
-    }
-
-    @CachePut(key = "#id")
-    public void updateById(Long id, User user) {
-        user.setId(retrieveById(id).getId());
-        userDAO.save(user);
-    }
-
-    @CachePut(key = "#id")
-    public void updateStatus(Long id, Boolean status) {
-        var userById = retrieveById(id);
-        userById.setActive(status);
-        userDAO.save(userById);
+    public UserResponse retrieveById(Long id) {
+        User user =
+                userDAO.findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new EntityNotFoundException(
+                                                "Not found user by id = %s".formatted(id)));
+        return userMapper.userToUserResponse(user);
     }
 
     @CacheEvict(key = "#id")
+    @Transactional
+    public void updateById(Long id, UserRequest userRequest) {
+        User user = userMapper.userRequestToUser(userRequest);
+        user.setId(retrieveByUserId(id).getId());
+        userDAO.saveAndFlush(user);
+    }
+
+    @CacheEvict(key = "#id")
+    @Transactional
+    public void updateStatus(Long id, Boolean status) {
+        User userById = retrieveByUserId(id);
+        userById.setActive(status);
+        userDAO.saveAndFlush(userById);
+    }
+
+    @CacheEvict(key = "#id")
+    @Transactional
     public void deleteById(Long id) {
+        if (!userDAO.existsById(id)) {
+            throw new EntityNotFoundException("User not found with id: %s".formatted(id));
+        }
         userDAO.deleteById(id);
     }
 
-    public Page<User> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
+    public Page<UserResponse> retrieveAllUsers(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return userDAO.findAll(pageable);
+        Page<User> users = userDAO.findAll(pageable);
+        return users.map(userMapper::userToUserResponse);
     }
 
-    public Page<User> retrieveFilterNameAndSurname(
+    public Page<UserResponse> retrieveFilterNameAndSurname(
             String name, String surname, int pageNumber, int pageSize) {
         Specification<User> spec = null;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -77,8 +90,18 @@ public class UserService {
         }
 
         if (spec == null) {
-            return userDAO.findAll(pageable);
+            Page<User> users = userDAO.findAll(pageable);
+            return users.map(userMapper::userToUserResponse);
         }
-        return userDAO.findAll(spec, pageable);
+        Page<User> users = userDAO.findAll(spec, pageable);
+        return users.map(userMapper::userToUserResponse);
+    }
+
+    private User retrieveByUserId(Long id) {
+        return userDAO.findById(id)
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Not found user by id = %s".formatted(id)));
     }
 }

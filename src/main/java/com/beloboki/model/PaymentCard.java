@@ -1,11 +1,10 @@
 package com.beloboki.model;
 
 import jakarta.persistence.*;
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,10 +13,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "payment_cards")
 @NoArgsConstructor
 @Data
+@SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
-public class PaymentCard implements Serializable {
-
-    @Serial private static final long serialVersionUID = 2L;
+public class PaymentCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
