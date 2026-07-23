@@ -41,7 +41,7 @@ jobs:
 
 
       - name: Package JAR
-        run: mvn package -Dmaven.test.skip=true Djacoco.skip=true
+        run: mvn package -Dmaven.test.skip=true -Djacoco.skip=true
 
 
       - name: Log in to Docker Hub
