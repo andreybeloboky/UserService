@@ -2,12 +2,9 @@ package com.beloboki.controller;
 
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
-import com.beloboki.model.PaymentCard;
 import com.beloboki.service.PaymentCardService;
 import jakarta.validation.Valid;
-
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,9 +25,14 @@ public class PaymentCardController {
             @RequestParam(required = false) String holder,
             @RequestParam(defaultValue = "0", required = false) Integer pageNumber,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        log.info("Received a request to get payment cards. Filter -> Holder: '{}', Page: {}, Size: {}",
-                holder, pageNumber, pageSize);
-        return ResponseEntity.ok().body(paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize));
+        log.info(
+                "Received a request to get payment cards. Filter -> Holder: '{}', Page: {}, Size:"
+                        + " {}",
+                holder,
+                pageNumber,
+                pageSize);
+        return ResponseEntity.ok()
+                .body(paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize));
     }
 
     @GetMapping("/payment-cards/{id}")
@@ -50,8 +52,10 @@ public class PaymentCardController {
     public ResponseEntity<Void> save(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        log.info("Creating a new payment card for User ID: {} (Holder: '{}')",
-                userId, paymentCardRequest.getHolder());
+        log.info(
+                "Creating a new payment card for User ID: {} (Holder: '{}')",
+                userId,
+                paymentCardRequest.getHolder());
         paymentCardService.save(userId, paymentCardRequest);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -61,7 +65,10 @@ public class PaymentCardController {
     public ResponseEntity<Void> update(
             @PathVariable("id") Long cardId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        log.info("Updating payment card with ID: {} (New holder: '{}')", cardId, paymentCardRequest.getHolder());
+        log.info(
+                "Updating payment card with ID: {} (New holder: '{}')",
+                cardId,
+                paymentCardRequest.getHolder());
         paymentCardService.updateById(cardId, paymentCardRequest);
         log.info("Payment card with ID {} was successfully updated", cardId);
         return ResponseEntity.ok().build();

@@ -72,10 +72,23 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.content.length()")
-                .isEqualTo(1)
-                .jsonPath("$.content[0].name")
-                .isEqualTo("Name");
+                .json(
+                        """
+                        {
+                          "content": [
+                            {
+                                  "id": %d,
+                                  "name": "Name",
+                                  "surname": "Surname",
+                                  "email": "test@gmail.com",
+                                  "active": false,
+                                  "birthDate": "2000-07-21",
+                                  "paymentCards": []
+                            }
+                          ]
+                        }
+                        """
+                                .formatted(user.getId()));
     }
 
     @Test
@@ -114,7 +127,10 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
 
         User updated = userDAO.findById(user.getId()).orElseThrow();
         Assertions.assertEquals("New", updated.getName());
+        Assertions.assertEquals("New", updated.getSurname());
+        Assertions.assertEquals(LocalDate.of(2000, 7, 21), updated.getBirthDate());
         Assertions.assertEquals("new@mail.com", updated.getEmail());
+        Assertions.assertEquals(false, updated.getActive());
     }
 
     @Test

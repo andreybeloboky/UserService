@@ -25,8 +25,13 @@ public class UserController {
             @RequestParam(value = "surname", required = false) String surname,
             @RequestParam(value = "page") Integer pageNumber,
             @RequestParam(value = "size") Integer pageSize) {
-        log.info("Received a request to get users. Filters -> Name: '{}', Surname: '{}', Page: {}, Size: {}",
-                name, surname, pageNumber, pageSize);
+        log.info(
+                "Received a request to get users. Filters -> Name: '{}', Surname: '{}', Page: {},"
+                        + " Size: {}",
+                name,
+                surname,
+                pageNumber,
+                pageSize);
         if ((name != null && !name.isBlank()) || (surname != null && !surname.isBlank())) {
             return ResponseEntity.ok()
                     .body(
