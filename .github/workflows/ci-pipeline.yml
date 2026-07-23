@@ -36,11 +36,12 @@ jobs:
       - name: Analyze with SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B clean verify org.jacoco:jacoco-maven-plugin:prepare-agent org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
 
       - name: Package JAR
-        run: mvn package -Dmaven.test.skip=true
+        run: mvn package -Dmaven.test.skip=true Djacoco.skip=true
 
 
       - name: Log in to Docker Hub
