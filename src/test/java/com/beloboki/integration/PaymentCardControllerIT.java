@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-public class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
+public class PaymentCardControllerIT extends AbstractIT {
 
     @Autowired private WebTestClient webTestClient;
 

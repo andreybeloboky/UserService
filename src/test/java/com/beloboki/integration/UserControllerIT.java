@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-public class UserControllerIntegrationTest extends AbstractIntegrationTest {
+public class UserControllerIT extends AbstractIT {
 
     @Autowired private WebTestClient webTestClient;
 

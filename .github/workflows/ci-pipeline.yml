@@ -2,7 +2,7 @@ name: build-and-deploy
 
 on:
   push:
-    branches: [ "main" , "feature/abjack-1"]
+    branches: [ "main" , "feature/abjack-1" ]
 
 
 jobs:
@@ -24,14 +24,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+
+
+      - name: Run Tests with Coverage
+        run: mvn -B clean test
+
       - name: Upload Jacoco Report
         uses: actions/upload-artifact@v4
         with:
-         name: jacoco-report
-         path: target/site/jacoco/jacoco.xml
-
-      - name: Run Tests with Coverage
-        run: mvn -B clean verify
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
 
 
       - name: Analyze with SonarCloud
@@ -40,6 +42,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
+      - name: Run Integration Tests
+        run: mvn -B verify
 
       - name: Package JAR
         run: mvn package -Dmaven.test.skip=true -Djacoco.skip=true
