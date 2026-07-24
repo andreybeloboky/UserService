@@ -1,11 +1,8 @@
 package com.beloboki.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -37,9 +34,6 @@ public class User extends Audit {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentCard> paymentCards;
 }
