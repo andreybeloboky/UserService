@@ -27,7 +27,7 @@
     <failsafe-plugin>3.2.1</failsafe-plugin>
     <sonar.organization>andreybeloboky</sonar.organization>
     <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.host.url>https://sonarcloud.io/dashboard?id=andreybeloboky_UserService</sonar.host.url>
   </properties>
   <dependencies>
     <dependency>
