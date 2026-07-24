@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:17
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d mydb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis
+    ports:
+      - "6379:6379"
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+
+  app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: user-service
+      ports:
+        - "8080:8080"
+      depends_on:
+        db:
+          condition: service_healthy
+        redis:
+          condition: service_started
+      environment:
+          - DATABASE_URL=jdbc:postgresql://db:5432/mydb
+          - DATABASE_USERNAME=user
+          - DATABASE_PASSWORD=pass
+          - REDIS_HOST=redis
+          - REDIS_PORT=6379
+volumes:
+  db_data:

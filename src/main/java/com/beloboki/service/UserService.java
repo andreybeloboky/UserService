@@ -53,7 +53,9 @@ public class UserService {
     @Transactional
     public void updateById(Long id, UserRequest userRequest) {
         User user = userMapper.userRequestToUser(userRequest);
-        user.setId(retrieveByUserId(id).getId());
+        User userFromDB = retrieveByUserId(id);
+        user.setId(userFromDB.getId());
+        user.setPaymentCards(userFromDB.getPaymentCards());
         userDAO.saveAndFlush(user);
     }
 

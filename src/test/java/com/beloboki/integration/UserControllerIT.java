@@ -17,6 +17,7 @@ public class UserControllerIT extends AbstractIT {
     @Autowired private WebTestClient webTestClient;
 
     @Autowired private UserDAO userDAO;
+
     private User user;
 
     @BeforeEach

@@ -20,7 +20,7 @@ public class PaymentCardController {
 
     private PaymentCardService paymentCardService;
 
-    @GetMapping("/payment-cards")
+    @GetMapping("/api/payment-cards")
     public ResponseEntity<Page<PaymentCardResponse>> retrieveFilterHolders(
             @RequestParam(required = false) String holder,
             @RequestParam(defaultValue = "0", required = false) Integer pageNumber,
@@ -35,20 +35,20 @@ public class PaymentCardController {
                 .body(paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize));
     }
 
-    @GetMapping("/payment-cards/{id}")
+    @GetMapping("/api/payment-cards/{id}")
     public ResponseEntity<PaymentCardResponse> retrieveById(@PathVariable("id") Long id) {
         log.info("Looking for payment card with ID: {}", id);
         return ResponseEntity.ok().body(paymentCardService.retrieveById(id));
     }
 
-    @GetMapping("/users/{userId}/payment-cards")
+    @GetMapping("/api/users/{userId}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @PathVariable("userId") Long userId) {
         log.info("Retrieve all payment cards for User ID: {}", userId);
         return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
     }
 
-    @PostMapping("/users/{userId}/payment-cards")
+    @PostMapping("/api/users/{userId}/payment-cards")
     public ResponseEntity<Void> save(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
@@ -61,7 +61,7 @@ public class PaymentCardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/payment-cards/{id}")
+    @PutMapping("/api/payment-cards/{id}")
     public ResponseEntity<Void> update(
             @PathVariable("id") Long cardId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
@@ -74,7 +74,7 @@ public class PaymentCardController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/payment-cards/{id}/status")
+    @PatchMapping("/api/payment-cards/{id}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable("id") Long cardId, @RequestParam("status") Boolean status) {
         log.info("Changing status for payment card ID {} to: {}", cardId, status);
@@ -83,7 +83,7 @@ public class PaymentCardController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/payment-cards/{id}")
+    @DeleteMapping("/api/payment-cards/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         log.info("Received a request to delete payment card with ID: {}", id);
         paymentCardService.deleteById(id);

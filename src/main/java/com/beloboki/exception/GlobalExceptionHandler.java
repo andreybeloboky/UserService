@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,23 +15,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception e) {
+    public ResponseEntity<ProblemDetail> handleGenericException(Exception e) {
         log.error("Handle exception", e);
-
-        var errorDto =
-                new ErrorResponseDTO("Internal server error", e.getMessage(), LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        responseError.setTitle("Internal server error");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseError);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEntityNotFoundException(Exception e) {
+    public ResponseEntity<ProblemDetail> handleEntityNotFoundException(Exception e) {
         log.error("Handle entity not found exception", e);
-
-        var errorDto =
-                new ErrorResponseDTO("Entity not found", e.getMessage(), LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDto);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        responseError.setTitle("Entity not found");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseError);
     }
 
     @ExceptionHandler({
@@ -39,11 +40,12 @@ public class GlobalExceptionHandler {
         MethodArgumentNotValidException.class,
         CardLimitException.class
     })
-    public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception e) {
+    public ResponseEntity<ProblemDetail> handleBadRequest(Exception e) {
         log.error("Handle IllegalArgumentException", e);
-
-        var errorDto = new ErrorResponseDTO("Bad request", e.getMessage(), LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        responseError.setTitle("Bad request");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 }

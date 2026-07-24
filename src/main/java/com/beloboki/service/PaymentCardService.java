@@ -30,6 +30,8 @@ public class PaymentCardService {
     private final PaymentCardMapper paymentCardMapper;
     private static final Integer CARD_LIMIT = 5;
 
+    @CacheEvict(cacheNames = "users", key = "#result.user.id")
+    @Transactional
     public void save(Long userId, PaymentCardRequest paymentCardRequest) {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
