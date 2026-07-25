@@ -73,6 +73,7 @@ public class PaymentCardServiceUnitTest {
 
         when(paymentCardMapper.paymentCardRequestToPaymentCard(any(PaymentCardRequest.class)))
                 .thenReturn(paymentCard);
+        when(paymentCardDAO.countCardsByUserId(1L)).thenReturn(4);
 
         paymentCardService.save(userMock.getId(), request);
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -114,6 +115,7 @@ public class PaymentCardServiceUnitTest {
         when(paymentCardMapper.paymentCardRequestToPaymentCard(any(PaymentCardRequest.class)))
                 .thenReturn(paymentCardLimit);
         when(userDAO.findById(1L)).thenReturn(Optional.of(userMock));
+        when(paymentCardDAO.countCardsByUserId(1L)).thenReturn(5);
 
         Assertions.assertThrows(
                 CardLimitException.class, () -> paymentCardService.save(userMock.getId(), request));
