@@ -8,8 +8,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    steps:
+    permissions:
+      contents: read
+      packages: write
 
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
