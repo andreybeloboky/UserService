@@ -53,7 +53,7 @@ public class PaymentCardControllerIT extends AbstractIT {
     void retrieveById_shouldReturnUserResponse() {
         webTestClient
                 .get()
-                .uri("/payment-cards/{id}", paymentCard.getId())
+                .uri("/api/payment-cards/{id}", paymentCard.getId())
                 .exchange()
                 .expectBody()
                 .json(
@@ -77,7 +77,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .uri(
                         uriBuilder ->
                                 uriBuilder
-                                        .path("/payment-cards")
+                                        .path("/api/payment-cards")
                                         .queryParam("holder", "Name")
                                         .queryParam("pageNumber", 0)
                                         .queryParam("pageSize", 10)
@@ -108,7 +108,7 @@ public class PaymentCardControllerIT extends AbstractIT {
     void retrieveAllCardsByUserId_shouldReturnCardsList() {
         webTestClient
                 .get()
-                .uri("/users/{userId}/payment-cards", user.getId())
+                .uri("/api/users/{userId}/payment-cards", user.getId())
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -139,7 +139,7 @@ public class PaymentCardControllerIT extends AbstractIT {
 
         webTestClient
                 .post()
-                .uri("/users/{userId}/payment-cards", user.getId())
+                .uri("/api/users/{userId}/payment-cards", user.getId())
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -156,7 +156,7 @@ public class PaymentCardControllerIT extends AbstractIT {
 
         webTestClient
                 .put()
-                .uri("/payment-cards/{id}", paymentCard.getId())
+                .uri("/api/payment-cards/{id}", paymentCard.getId())
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -170,7 +170,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .uri(
                         uriBuilder ->
                                 uriBuilder
-                                        .path("/payment-cards/{id}/status")
+                                        .path("/api/payment-cards/{id}/status")
                                         .queryParam("status", false) // Меняем false на true
                                         .build(paymentCard.getId()))
                 .exchange()
@@ -182,11 +182,11 @@ public class PaymentCardControllerIT extends AbstractIT {
     void deleteById_shouldRemoveCardFromDatabase() {
         webTestClient
                 .delete()
-                .uri("/payment-cards/{id}", paymentCard.getId())
+                .uri("/api/payment-cards/{id}", paymentCard.getId())
                 .exchange()
                 .expectStatus()
                 .isNoContent();
 
-        Assertions.assertTrue(paymentCardDAO.findById(paymentCard.getId()).isPresent());
+        Assertions.assertFalse(paymentCardDAO.findById(paymentCard.getId()).isPresent());
     }
 }

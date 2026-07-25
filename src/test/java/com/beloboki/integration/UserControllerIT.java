@@ -38,7 +38,7 @@ public class UserControllerIT extends AbstractIT {
     void retrieveById_shouldReturnUserResponse() {
         webTestClient
                 .get()
-                .uri("/users/{id}", user.getId())
+                .uri("/api/users/{id}", user.getId())
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -66,7 +66,7 @@ public class UserControllerIT extends AbstractIT {
                 .uri(
                         uriBuilder ->
                                 uriBuilder
-                                        .path("/users")
+                                        .path("/api/users")
                                         .queryParam("page", 0)
                                         .queryParam("size", 10)
                                         .build())
@@ -102,7 +102,13 @@ public class UserControllerIT extends AbstractIT {
         request.setEmail("second@gmail.com");
         request.setActive(true);
 
-        webTestClient.post().uri("/users").bodyValue(request).exchange().expectStatus().isCreated();
+        webTestClient
+                .post()
+                .uri("/api/users")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isCreated();
 
         var users = userDAO.findAll();
         Assertions.assertEquals(2, users.size());
@@ -121,7 +127,7 @@ public class UserControllerIT extends AbstractIT {
 
         webTestClient
                 .put()
-                .uri("/users/{id}", user.getId())
+                .uri("/api/users/{id}", user.getId())
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -142,7 +148,7 @@ public class UserControllerIT extends AbstractIT {
                 .uri(
                         uriBuilder ->
                                 uriBuilder
-                                        .path("/users/{id}/status")
+                                        .path("/api/users/{id}/status")
                                         .queryParam("status", true)
                                         .build(user.getId()))
                 .exchange()
@@ -157,7 +163,7 @@ public class UserControllerIT extends AbstractIT {
     void deleteById_shouldRemoveUser() {
         webTestClient
                 .delete()
-                .uri("/users/{id}", user.getId())
+                .uri("/api/users/{id}", user.getId())
                 .exchange()
                 .expectStatus()
                 .isNoContent();

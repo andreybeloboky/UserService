@@ -2,8 +2,7 @@ package com.beloboki.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -11,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @SuperBuilder
+@NoArgsConstructor
 public class PaymentCard extends Audit {
 
     @Id
