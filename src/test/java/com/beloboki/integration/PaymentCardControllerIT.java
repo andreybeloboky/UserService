@@ -131,11 +131,12 @@ public class PaymentCardControllerIT extends AbstractIT {
 
     @Test
     void save_shouldCreatePaymentCard() {
-        PaymentCardRequest request = new PaymentCardRequest();
-        request.setHolder("New Holder");
-        request.setNumber("1234567890123456");
-        request.setExpirationDate(LocalDateTime.of(2035, Month.DECEMBER, 1, 0, 0));
-        request.setActive(true);
+        PaymentCardRequest request =
+                new PaymentCardRequest(
+                        "New Holder",
+                        "1234567890123456",
+                        LocalDateTime.of(2035, Month.DECEMBER, 1, 0, 0),
+                        true);
 
         webTestClient
                 .post()
@@ -148,11 +149,12 @@ public class PaymentCardControllerIT extends AbstractIT {
 
     @Test
     void update_shouldModifyPaymentCard() {
-        PaymentCardRequest request = new PaymentCardRequest();
-        request.setHolder("Updated Holder");
-        request.setNumber("1234567890123456");
-        request.setExpirationDate(LocalDateTime.of(2030, Month.JULY, 21, 0, 0));
-        request.setActive(true);
+        PaymentCardRequest request =
+                new PaymentCardRequest(
+                        "Updated Holder",
+                        "1234567890123456",
+                        LocalDateTime.of(2030, Month.JULY, 21, 0, 0),
+                        true);
 
         webTestClient
                 .put()

@@ -50,7 +50,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userRequest) {
-        log.info("Creating a new user with email: {}", userRequest.getEmail());
+        log.info("Creating a new user with email: {}", userRequest.email());
         userService.save(userRequest);
         log.info("New user was successfully saved to the database");
         return ResponseEntity.status(HttpStatus.CREATED).build();

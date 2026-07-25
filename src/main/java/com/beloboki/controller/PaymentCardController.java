@@ -55,7 +55,7 @@ public class PaymentCardController {
         log.info(
                 "Creating a new payment card for User ID: {} (Holder: '{}')",
                 userId,
-                paymentCardRequest.getHolder());
+                paymentCardRequest.holder());
         paymentCardService.save(userId, paymentCardRequest);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -68,7 +68,7 @@ public class PaymentCardController {
         log.info(
                 "Updating payment card with ID: {} (New holder: '{}')",
                 cardId,
-                paymentCardRequest.getHolder());
+                paymentCardRequest.holder());
         paymentCardService.updateById(cardId, paymentCardRequest);
         log.info("Payment card with ID {} was successfully updated", cardId);
         return ResponseEntity.ok().build();

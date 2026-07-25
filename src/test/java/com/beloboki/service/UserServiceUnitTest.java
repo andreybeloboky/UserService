@@ -42,12 +42,13 @@ public class UserServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        userRequest = new UserRequest();
-        userRequest.setName("Name");
-        userRequest.setSurname("Surname");
-        userRequest.setBirthDate(LocalDate.of(2000, Month.JULY, 21));
-        userRequest.setEmail("test@gmail.com");
-        userRequest.setActive(true);
+        userRequest =
+                new UserRequest(
+                        "Name",
+                        "Surname",
+                        LocalDate.of(2000, Month.JULY, 21),
+                        "test@gmail.com",
+                        true);
 
         userResponse =
                 new UserResponse(

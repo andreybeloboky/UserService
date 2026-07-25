@@ -2,25 +2,13 @@ package com.beloboki.dto;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
-import lombok.Data;
 
-@Data
-public class PaymentCardRequest {
-
-    @NotBlank(message = "Card must have a number")
-    @Pattern(
-            regexp = "^\\d{13,19}$",
-            message = "Payment card should have number from 13 to 19 numbers")
-    @Size(min = 13, max = 19)
-    private String number;
-
-    @NotBlank(message = "Personal information of holder shouldn't be empty")
-    private String holder;
-
-    @NotNull(message = "Expiration shouldn't be empty")
-    @Future
-    private LocalDateTime expirationDate;
-
-    @NotNull(message = "Card status shouldn't be empty")
-    private Boolean active;
-}
+public record PaymentCardRequest(
+        @NotBlank(message = "Personal information of holder shouldn't be empty") String holder,
+        @NotBlank(message = "Card must have a number")
+                @Pattern(
+                        regexp = "^\\d{16}$",
+                        message = "Payment card should have number from 16 numbers")
+                String number,
+        @NotNull(message = "Expiration shouldn't be empty") @Future LocalDateTime expirationDate,
+        @NotNull(message = "Card status shouldn't be empty") Boolean active) {}

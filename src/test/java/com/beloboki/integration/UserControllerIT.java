@@ -95,12 +95,13 @@ public class UserControllerIT extends AbstractIT {
 
     @Test
     void save_shouldCreateUser() {
-        UserRequest request = new UserRequest();
-        request.setName("Name");
-        request.setSurname("Surname");
-        request.setBirthDate(LocalDate.of(2000, Month.JULY, 21));
-        request.setEmail("second@gmail.com");
-        request.setActive(true);
+        UserRequest request =
+                new UserRequest(
+                        "Name",
+                        "Surname",
+                        LocalDate.of(2000, Month.JULY, 21),
+                        "second@gmail.com",
+                        true);
 
         webTestClient
                 .post()
@@ -118,12 +119,9 @@ public class UserControllerIT extends AbstractIT {
 
     @Test
     void update_shouldModifyUser() {
-        UserRequest request = new UserRequest();
-        request.setName("New");
-        request.setSurname("New");
-        request.setBirthDate(LocalDate.of(2000, Month.JULY, 21));
-        request.setEmail("new@mail.com");
-        request.setActive(false);
+        UserRequest request =
+                new UserRequest(
+                        "New", "New", LocalDate.of(2000, Month.JULY, 21), "new@gmail.com", true);
 
         webTestClient
                 .put()
@@ -137,8 +135,8 @@ public class UserControllerIT extends AbstractIT {
         Assertions.assertEquals("New", updated.getName());
         Assertions.assertEquals("New", updated.getSurname());
         Assertions.assertEquals(LocalDate.of(2000, Month.JULY, 21), updated.getBirthDate());
-        Assertions.assertEquals("new@mail.com", updated.getEmail());
-        Assertions.assertEquals(false, updated.getActive());
+        Assertions.assertEquals("new@gmail.com", updated.getEmail());
+        Assertions.assertEquals(true, updated.getActive());
     }
 
     @Test
