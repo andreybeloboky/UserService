@@ -26,7 +26,7 @@ jobs:
           cache: maven
 
       - name: Run Tests with Coverage
-        run:  mvn -B jacoco:prepare-agent test jacoco:report
+        run:  mvn -B -DskipTests=false clean verify
 
       - name: Debug Jacoco XML
         run: ls -l target/site/jacoco
@@ -36,9 +36,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
-      - name: Run Integration Tests
-        run: mvn -B verify
 
       - name: Package JAR
         run: mvn package -Dmaven.test.skip=true -Djacoco.skip=true
