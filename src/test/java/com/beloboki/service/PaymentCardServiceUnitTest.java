@@ -70,7 +70,7 @@ public class PaymentCardServiceUnitTest {
         PaymentCard paymentCard =
                 PaymentCard.builder().user(userMock).number("12345678222").build();
 
-        when(userDAO.findById(1L)).thenReturn(Optional.of(userMock));
+        when(userDAO.findByUserId(1L)).thenReturn(Optional.of(userMock));
 
         when(paymentCardMapper.paymentCardRequestToPaymentCard(any(PaymentCardRequest.class)))
                 .thenReturn(paymentCard);
@@ -116,7 +116,7 @@ public class PaymentCardServiceUnitTest {
 
         when(paymentCardMapper.paymentCardRequestToPaymentCard(any(PaymentCardRequest.class)))
                 .thenReturn(paymentCardLimit);
-        when(userDAO.findById(1L)).thenReturn(Optional.of(userMock));
+        when(userDAO.findByUserId(1L)).thenReturn(Optional.of(userMock));
         when(paymentCardDAO.countCardsByUserId(1L)).thenReturn(5);
 
         Assertions.assertThrows(

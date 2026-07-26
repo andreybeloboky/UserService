@@ -108,7 +108,7 @@ public class PaymentCardService {
 
     private User findUserById(Long userId, PaymentCard paymentCard) {
         var user =
-                userDAO.findById(userId)
+                userDAO.findByUserId(userId)
                         .orElseThrow(
                                 () ->
                                         new EntityNotFoundException(
