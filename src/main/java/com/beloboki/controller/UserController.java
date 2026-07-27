@@ -27,7 +27,8 @@ public class UserController {
             @RequestParam(value = "size") Integer pageSize) {
         if ((name != null && !name.isBlank()) || (surname != null && !surname.isBlank())) {
             return ResponseEntity.ok()
-                    .body(userService.retrieveFilterNameAndSurname(
+                    .body(
+                            userService.retrieveFilterNameAndSurname(
                                     name, surname, pageNumber, pageSize));
         } else {
             return ResponseEntity.ok().body(userService.retrieveAllUsers(pageNumber, pageSize));

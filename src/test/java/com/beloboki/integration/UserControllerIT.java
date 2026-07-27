@@ -49,14 +49,22 @@ public class UserControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(user.getId())
-                .jsonPath("$.name").isEqualTo(NAME)
-                .jsonPath("$.surname").isEqualTo(SURNAME)
-                .jsonPath("$.email").isEqualTo(EMAIL)
-                .jsonPath("$.active").isEqualTo(false)
-                .jsonPath("$.birthDate").isEqualTo(BIRTH_DATE)
-                .jsonPath("$.paymentCards").isArray()
-                .jsonPath("$.paymentCards.length()").isEqualTo(0);
+                .jsonPath("$.id")
+                .isEqualTo(user.getId())
+                .jsonPath("$.name")
+                .isEqualTo(NAME)
+                .jsonPath("$.surname")
+                .isEqualTo(SURNAME)
+                .jsonPath("$.email")
+                .isEqualTo(EMAIL)
+                .jsonPath("$.active")
+                .isEqualTo(false)
+                .jsonPath("$.birthDate")
+                .isEqualTo(BIRTH_DATE)
+                .jsonPath("$.paymentCards")
+                .isArray()
+                .jsonPath("$.paymentCards.length()")
+                .isEqualTo(0);
     }
 
     @Test
@@ -74,24 +82,31 @@ public class UserControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.content.length()").isEqualTo(1)
-                .jsonPath("$.content[0].id").isEqualTo(user.getId())
-                .jsonPath("$.content[0].name").isEqualTo(NAME)
-                .jsonPath("$.content[0].surname").isEqualTo(SURNAME)
-                .jsonPath("$.content[0].email").isEqualTo(EMAIL)
-                .jsonPath("$.content[0].active").isEqualTo(false)
-                .jsonPath("$.content[0].birthDate").isEqualTo(BIRTH_DATE)
-                .jsonPath("$.content[0].paymentCards").isArray()
-                .jsonPath("$.content[0].paymentCards.length()").isEqualTo(0);
+                .jsonPath("$.content.length()")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].id")
+                .isEqualTo(user.getId())
+                .jsonPath("$.content[0].name")
+                .isEqualTo(NAME)
+                .jsonPath("$.content[0].surname")
+                .isEqualTo(SURNAME)
+                .jsonPath("$.content[0].email")
+                .isEqualTo(EMAIL)
+                .jsonPath("$.content[0].active")
+                .isEqualTo(false)
+                .jsonPath("$.content[0].birthDate")
+                .isEqualTo(BIRTH_DATE)
+                .jsonPath("$.content[0].paymentCards")
+                .isArray()
+                .jsonPath("$.content[0].paymentCards.length()")
+                .isEqualTo(0);
     }
 
     @Test
     void save_shouldCreateUser() {
         UserRequest request =
-                new UserRequest(NAME, SURNAME,
-                        LocalDate.of(2000, Month.JULY, 21),
-                        SECOND_EMAIL,
-                        true);
+                new UserRequest(
+                        NAME, SURNAME, LocalDate.of(2000, Month.JULY, 21), SECOND_EMAIL, true);
 
         webTestClient
                 .post()
@@ -109,9 +124,7 @@ public class UserControllerIT extends AbstractIT {
 
     @Test
     void update_shouldModifyUser() {
-        UserRequest request =
-                new UserRequest(
-                        NAME, SURNAME, BIRTH_DATE, UPGRADE_EMAIL, true);
+        UserRequest request = new UserRequest(NAME, SURNAME, BIRTH_DATE, UPGRADE_EMAIL, true);
 
         webTestClient
                 .put()
@@ -133,9 +146,12 @@ public class UserControllerIT extends AbstractIT {
     void updateStatus_shouldChangeActiveFlag() {
         webTestClient
                 .patch()
-                .uri(uriBuilder -> uriBuilder.path("/api/users/{id}/status")
-                        .queryParam("status", true)
-                        .build(user.getId()))
+                .uri(
+                        uriBuilder ->
+                                uriBuilder
+                                        .path("/api/users/{id}/status")
+                                        .queryParam("status", true)
+                                        .build(user.getId()))
                 .exchange()
                 .expectStatus()
                 .isOk();

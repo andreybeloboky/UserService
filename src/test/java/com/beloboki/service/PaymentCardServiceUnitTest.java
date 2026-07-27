@@ -3,7 +3,6 @@ package com.beloboki.service;
 import static org.mockito.Mockito.*;
 
 import com.beloboki.dao.PaymentCardDAO;
-import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.exception.CardLimitException;
@@ -75,7 +74,8 @@ public class PaymentCardServiceUnitTest {
         when(userService.retrieveByUserIdLocking(1L)).thenReturn(userMock);
 
         paymentCardService.save(userMock.getId(), paymentCardRequest);
-        ArgumentCaptor<PaymentCard> paymentCardArgumentCaptor = ArgumentCaptor.forClass(PaymentCard.class);
+        ArgumentCaptor<PaymentCard> paymentCardArgumentCaptor =
+                ArgumentCaptor.forClass(PaymentCard.class);
 
         verify(paymentCardDAO).saveAndFlush(paymentCardArgumentCaptor.capture());
         PaymentCard paymentCardCaptured = paymentCardArgumentCaptor.getValue();
@@ -95,7 +95,6 @@ public class PaymentCardServiceUnitTest {
                 EntityNotFoundException.class,
                 () -> paymentCardService.save(1L, paymentCardRequest));
     }
-
 
     @Test
     void givenPaymentCardAndUserId_ShouldThrownExceptionPaymentCard_WhenUserHasLimit() {

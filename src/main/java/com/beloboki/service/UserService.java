@@ -98,13 +98,17 @@ public class UserService {
 
     public User retrieveByUserIdLocking(Long id) {
         return userDAO.findByUserId(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Not found user by id = %s".formatted(id)));
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Not found user by id = %s".formatted(id)));
     }
 
     private User retrieveByUserId(Long id) {
         return userDAO.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Not found user by id = %s".formatted(id)));
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Not found user by id = %s".formatted(id)));
     }
 }

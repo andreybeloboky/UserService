@@ -5,11 +5,9 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,14 +16,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class PaymentCardControllerIT extends AbstractIT {
 
-    @Autowired
-    private WebTestClient webTestClient;
+    @Autowired private WebTestClient webTestClient;
 
-    @Autowired
-    private PaymentCardDAO paymentCardDAO;
+    @Autowired private PaymentCardDAO paymentCardDAO;
 
-    @Autowired
-    private UserDAO userDAO;
+    @Autowired private UserDAO userDAO;
 
     private User user;
 
@@ -36,7 +31,8 @@ public class PaymentCardControllerIT extends AbstractIT {
     private static final String USER_EMAIL = "test@gmail.com";
     private static final LocalDate USER_BIRTH_DATE = LocalDate.of(2000, Month.JULY, 21);
     private static final String PAYMENT_CARD_HOLDER = "Name";
-    private static final LocalDateTime EXPIRATION_DATE = LocalDateTime.of(2030, Month.JULY, 21, 0, 0);
+    private static final LocalDateTime EXPIRATION_DATE =
+            LocalDateTime.of(2030, Month.JULY, 21, 0, 0);
     private static final String CARD_NUMBER = "1234567330123456";
 
     @BeforeEach
@@ -44,21 +40,23 @@ public class PaymentCardControllerIT extends AbstractIT {
         userDAO.deleteAll();
         paymentCardDAO.deleteAll();
         user =
-                userDAO.save(User.builder()
-                        .name(USER_NAME)
-                        .surname(USER_SURNAME)
-                        .birthDate(USER_BIRTH_DATE)
-                        .email(USER_EMAIL)
-                        .active(false)
-                        .build());
+                userDAO.save(
+                        User.builder()
+                                .name(USER_NAME)
+                                .surname(USER_SURNAME)
+                                .birthDate(USER_BIRTH_DATE)
+                                .email(USER_EMAIL)
+                                .active(false)
+                                .build());
         paymentCard =
-                paymentCardDAO.save(PaymentCard.builder()
-                        .holder(PAYMENT_CARD_HOLDER)
-                        .expirationDate(EXPIRATION_DATE)
-                        .active(false)
-                        .number(CARD_NUMBER)
-                        .user(user)
-                        .build());
+                paymentCardDAO.save(
+                        PaymentCard.builder()
+                                .holder(PAYMENT_CARD_HOLDER)
+                                .expirationDate(EXPIRATION_DATE)
+                                .active(false)
+                                .number(CARD_NUMBER)
+                                .user(user)
+                                .build());
     }
 
     @Test
@@ -68,11 +66,16 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
                 .exchange()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(user.getId())
-                .jsonPath("$.holder").isEqualTo(PAYMENT_CARD_HOLDER)
-                .jsonPath("$.number").isEqualTo(CARD_NUMBER)
-                .jsonPath("$.expirationDate").isEqualTo(EXPIRATION_DATE)
-                .jsonPath("$.active").isEqualTo(false);
+                .jsonPath("$.id")
+                .isEqualTo(user.getId())
+                .jsonPath("$.holder")
+                .isEqualTo(PAYMENT_CARD_HOLDER)
+                .jsonPath("$.number")
+                .isEqualTo(CARD_NUMBER)
+                .jsonPath("$.expirationDate")
+                .isEqualTo(EXPIRATION_DATE)
+                .jsonPath("$.active")
+                .isEqualTo(false);
     }
 
     @Test
@@ -91,10 +94,14 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.content[0].id").isEqualTo(paymentCard.getId())
-                .jsonPath("$.content[0].holder").isEqualTo(PAYMENT_CARD_HOLDER)
-                .jsonPath("$.content[0].expirationDate").isEqualTo(EXPIRATION_DATE)
-                .jsonPath("$.content[0].active").isEqualTo(false);
+                .jsonPath("$.content[0].id")
+                .isEqualTo(paymentCard.getId())
+                .jsonPath("$.content[0].holder")
+                .isEqualTo(PAYMENT_CARD_HOLDER)
+                .jsonPath("$.content[0].expirationDate")
+                .isEqualTo(EXPIRATION_DATE)
+                .jsonPath("$.content[0].active")
+                .isEqualTo(false);
     }
 
     @Test
@@ -106,20 +113,20 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.length()").isEqualTo(1)
-                .jsonPath("$.[0].id").isEqualTo(paymentCard.getId())
-                .jsonPath("$.[0].holder").isEqualTo(PAYMENT_CARD_HOLDER)
-                .jsonPath("$.[0].number").isEqualTo(CARD_NUMBER);
+                .jsonPath("$.length()")
+                .isEqualTo(1)
+                .jsonPath("$.[0].id")
+                .isEqualTo(paymentCard.getId())
+                .jsonPath("$.[0].holder")
+                .isEqualTo(PAYMENT_CARD_HOLDER)
+                .jsonPath("$.[0].number")
+                .isEqualTo(CARD_NUMBER);
     }
 
     @Test
     void save_shouldCreatePaymentCard() {
         PaymentCardRequest request =
-                new PaymentCardRequest(
-                        PAYMENT_CARD_HOLDER,
-                        CARD_NUMBER,
-                        EXPIRATION_DATE,
-                        true);
+                new PaymentCardRequest(PAYMENT_CARD_HOLDER, CARD_NUMBER, EXPIRATION_DATE, true);
 
         webTestClient
                 .post()
@@ -136,11 +143,7 @@ public class PaymentCardControllerIT extends AbstractIT {
     @Test
     void update_shouldModifyPaymentCard() {
         PaymentCardRequest request =
-                new PaymentCardRequest(
-                        PAYMENT_CARD_HOLDER,
-                        CARD_NUMBER,
-                        EXPIRATION_DATE,
-                        true);
+                new PaymentCardRequest(PAYMENT_CARD_HOLDER, CARD_NUMBER, EXPIRATION_DATE, true);
 
         webTestClient
                 .put()
@@ -158,7 +161,8 @@ public class PaymentCardControllerIT extends AbstractIT {
     void updateStatus_shouldChangeCardActiveStatus() {
         webTestClient
                 .patch()
-                .uri(uriBuilder ->
+                .uri(
+                        uriBuilder ->
                                 uriBuilder
                                         .path("/api/payment-cards/{id}/status")
                                         .queryParam("status", true)

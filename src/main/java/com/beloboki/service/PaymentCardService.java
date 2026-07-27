@@ -1,12 +1,10 @@
 package com.beloboki.service;
 
 import com.beloboki.dao.PaymentCardDAO;
-import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.exception.CardLimitException;
 import com.beloboki.mapper.PaymentCardMapper;
-import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
@@ -109,6 +107,9 @@ public class PaymentCardService {
     private PaymentCard findCardById(Long id) {
         return paymentCardDAO
                 .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = %s".formatted(id)));
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Not found user by id = %s".formatted(id)));
     }
 }
