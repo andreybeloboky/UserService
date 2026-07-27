@@ -60,14 +60,14 @@ public class PaymentCardControllerIT extends AbstractIT {
     }
 
     @Test
-    void retrieveById_shouldReturnUserResponse() {
+    void retrieveById_shouldReturnCardResponse() {
         webTestClient
                 .get()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
                 .exchange()
                 .expectBody()
                 .jsonPath("$.id")
-                .isEqualTo(user.getId())
+                .isEqualTo(paymentCard.getId())
                 .jsonPath("$.holder")
                 .isEqualTo(PAYMENT_CARD_HOLDER)
                 .jsonPath("$.number")
