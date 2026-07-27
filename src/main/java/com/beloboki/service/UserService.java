@@ -33,12 +33,7 @@ public class UserService {
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public UserResponse retrieveById(Long id) {
-        User user =
-                userDAO.findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new EntityNotFoundException(
-                                                "Not found user by id = %s".formatted(id)));
+        User user = retrieveByUserId(id);
         return userMapper.userToUserResponse(user);
     }
 
@@ -101,11 +96,15 @@ public class UserService {
         return users.map(userMapper::userToUserResponse);
     }
 
+    public User retrieveByUserIdLocking(Long id) {
+        return userDAO.findByUserId(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found user by id = %s".formatted(id)));
+    }
+
     private User retrieveByUserId(Long id) {
         return userDAO.findById(id)
-                .orElseThrow(
-                        () ->
-                                new EntityNotFoundException(
-                                        "Not found user by id = %s".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found user by id = %s".formatted(id)));
     }
 }

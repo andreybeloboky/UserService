@@ -14,7 +14,4 @@ public interface PaymentCardDAO
 
     @Query("SELECT p FROM PaymentCard p WHERE p.user.id = :id")
     List<PaymentCard> findAllCardByUserId(@Param("id") Long id);
-
-    @Query("SELECT COUNT(p) FROM PaymentCard p WHERE p.user.id = :userId")
-    int countCardsByUserId(Long userId);
 }

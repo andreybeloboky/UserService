@@ -5,7 +5,7 @@ The primary objective of this assignment is to build a robust backend Java web a
 ---
 
 ### Technical Stack
-* **Java 25** & **Maven**
+* **Java 21** & **Maven**
 * **Spring Boot** (Data JPA, Web, Validation)
 * **Liquibase** (Database migrations)
 * **PostgreSQL** (Primary database)
@@ -22,7 +22,7 @@ You can run the application on your local machine or via Docker.
 
 #### Step 1: Prerequisites
 Ensure you have the following installed:
-* JDK 25
+* JDK 21
 * Maven 4.1+
 * Docker & Docker Compose
 

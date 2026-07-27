@@ -6,6 +6,7 @@ import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.exception.CardLimitException;
 import com.beloboki.mapper.PaymentCardMapper;
+import com.beloboki.mapper.UserMapper;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentCardService {
 
     private final PaymentCardDAO paymentCardDAO;
-    private final UserDAO userDAO;
+    private final UserService userService;
     private final PaymentCardMapper paymentCardMapper;
     private static final Integer CARD_LIMIT = 5;
 
@@ -35,14 +36,13 @@ public class PaymentCardService {
     public void save(Long userId, PaymentCardRequest paymentCardRequest) {
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
-        var user = findUserById(userId, paymentCard);
-
-        if (paymentCardDAO.countCardsByUserId(userId) < CARD_LIMIT) {
-            user.getPaymentCards().add(paymentCard);
+        User user = userService.retrieveByUserIdLocking(userId);
+        if (user.getPaymentCards().size() < CARD_LIMIT) {
+            paymentCard.setUser(user);
+            paymentCardDAO.saveAndFlush(paymentCard);
         } else {
             throw new CardLimitException("User with %s has cards limit 5/5".formatted(userId));
         }
-        userDAO.saveAndFlush(user);
     }
 
     @Cacheable(key = "#id")
@@ -106,23 +106,9 @@ public class PaymentCardService {
         return paymentCards.map(paymentCardMapper::cardToCardResponse);
     }
 
-    private User findUserById(Long userId, PaymentCard paymentCard) {
-        var user =
-                userDAO.findByUserId(userId)
-                        .orElseThrow(
-                                () ->
-                                        new EntityNotFoundException(
-                                                "Not found user by id = %s".formatted(userId)));
-        paymentCard.setUser(user);
-        return user;
-    }
-
     private PaymentCard findCardById(Long id) {
         return paymentCardDAO
                 .findById(id)
-                .orElseThrow(
-                        () ->
-                                new EntityNotFoundException(
-                                        "Not found user by id = %s".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Not found user by id = %s".formatted(id)));
     }
 }

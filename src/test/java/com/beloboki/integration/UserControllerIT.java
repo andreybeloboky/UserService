@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class UserControllerIT extends AbstractIT {
@@ -20,16 +19,23 @@ public class UserControllerIT extends AbstractIT {
 
     private User user;
 
+    private static final String NAME = "Name";
+    private static final String SURNAME = "Surname";
+    private static final String EMAIL = "test@gmail.com";
+    private static final LocalDate BIRTH_DATE = LocalDate.of(2000, Month.JULY, 21);
+    private static final String SECOND_EMAIL = "second@gmail.com";
+    private static final String UPGRADE_EMAIL = "new@gmail.com";
+
     @BeforeEach
     void setUp() {
         userDAO.deleteAll();
         user =
                 userDAO.save(
                         User.builder()
-                                .name("Name")
-                                .surname("Surname")
-                                .birthDate(LocalDate.of(2000, Month.JULY, 21))
-                                .email("test@gmail.com")
+                                .name(NAME)
+                                .surname(SURNAME)
+                                .birthDate(BIRTH_DATE)
+                                .email(EMAIL)
                                 .active(false)
                                 .build());
     }
@@ -43,20 +49,14 @@ public class UserControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .json(
-                        """
-                        {
-                          "id": %d,
-                          "name": "Name",
-                          "surname": "Surname",
-                          "email": "test@gmail.com",
-                          "active": false,
-                          "birthDate": "2000-07-21",
-                          "paymentCards": []
-                        }
-                        """
-                                .formatted(user.getId()),
-                        JsonCompareMode.LENIENT);
+                .jsonPath("$.id").isEqualTo(user.getId())
+                .jsonPath("$.name").isEqualTo(NAME)
+                .jsonPath("$.surname").isEqualTo(SURNAME)
+                .jsonPath("$.email").isEqualTo(EMAIL)
+                .jsonPath("$.active").isEqualTo(false)
+                .jsonPath("$.birthDate").isEqualTo(BIRTH_DATE)
+                .jsonPath("$.paymentCards").isArray()
+                .jsonPath("$.paymentCards.length()").isEqualTo(0);
     }
 
     @Test
@@ -74,33 +74,23 @@ public class UserControllerIT extends AbstractIT {
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .json(
-                        """
-                        {
-                          "content": [
-                            {
-                                  "id": %d,
-                                  "name": "Name",
-                                  "surname": "Surname",
-                                  "email": "test@gmail.com",
-                                  "active": false,
-                                  "birthDate": "2000-07-21",
-                                  "paymentCards": []
-                            }
-                          ]
-                        }
-                        """
-                                .formatted(user.getId()));
+                .jsonPath("$.content.length()").isEqualTo(1)
+                .jsonPath("$.content[0].id").isEqualTo(user.getId())
+                .jsonPath("$.content[0].name").isEqualTo(NAME)
+                .jsonPath("$.content[0].surname").isEqualTo(SURNAME)
+                .jsonPath("$.content[0].email").isEqualTo(EMAIL)
+                .jsonPath("$.content[0].active").isEqualTo(false)
+                .jsonPath("$.content[0].birthDate").isEqualTo(BIRTH_DATE)
+                .jsonPath("$.content[0].paymentCards").isArray()
+                .jsonPath("$.content[0].paymentCards.length()").isEqualTo(0);
     }
 
     @Test
     void save_shouldCreateUser() {
         UserRequest request =
-                new UserRequest(
-                        "Name",
-                        "Surname",
+                new UserRequest(NAME, SURNAME,
                         LocalDate.of(2000, Month.JULY, 21),
-                        "second@gmail.com",
+                        SECOND_EMAIL,
                         true);
 
         webTestClient
@@ -113,15 +103,15 @@ public class UserControllerIT extends AbstractIT {
 
         var users = userDAO.findAll();
         Assertions.assertEquals(2, users.size());
-        Assertions.assertEquals("second@gmail.com", users.getLast().getEmail());
-        Assertions.assertEquals("test@gmail.com", users.getFirst().getEmail());
+        Assertions.assertEquals(SECOND_EMAIL, users.getLast().getEmail());
+        Assertions.assertEquals(EMAIL, users.getFirst().getEmail());
     }
 
     @Test
     void update_shouldModifyUser() {
         UserRequest request =
                 new UserRequest(
-                        "New", "New", LocalDate.of(2000, Month.JULY, 21), "new@gmail.com", true);
+                        NAME, SURNAME, BIRTH_DATE, UPGRADE_EMAIL, true);
 
         webTestClient
                 .put()
@@ -132,10 +122,10 @@ public class UserControllerIT extends AbstractIT {
                 .isOk();
 
         User updated = userDAO.findById(user.getId()).orElseThrow();
-        Assertions.assertEquals("New", updated.getName());
-        Assertions.assertEquals("New", updated.getSurname());
-        Assertions.assertEquals(LocalDate.of(2000, Month.JULY, 21), updated.getBirthDate());
-        Assertions.assertEquals("new@gmail.com", updated.getEmail());
+        Assertions.assertEquals(NAME, updated.getName());
+        Assertions.assertEquals(SURNAME, updated.getSurname());
+        Assertions.assertEquals(BIRTH_DATE, updated.getBirthDate());
+        Assertions.assertEquals(UPGRADE_EMAIL, updated.getEmail());
         Assertions.assertEquals(true, updated.getActive());
     }
 
@@ -143,12 +133,9 @@ public class UserControllerIT extends AbstractIT {
     void updateStatus_shouldChangeActiveFlag() {
         webTestClient
                 .patch()
-                .uri(
-                        uriBuilder ->
-                                uriBuilder
-                                        .path("/api/users/{id}/status")
-                                        .queryParam("status", true)
-                                        .build(user.getId()))
+                .uri(uriBuilder -> uriBuilder.path("/api/users/{id}/status")
+                        .queryParam("status", true)
+                        .build(user.getId()))
                 .exchange()
                 .expectStatus()
                 .isOk();
