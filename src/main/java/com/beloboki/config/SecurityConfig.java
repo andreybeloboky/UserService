@@ -30,9 +30,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users", "/api/users/**").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(
+                        auth ->
+                                auth.requestMatchers("/api/users", "/api/users/**")
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated())
                 .oauth2ResourceServer(
                         oauth2 ->
                                 oauth2.jwt(

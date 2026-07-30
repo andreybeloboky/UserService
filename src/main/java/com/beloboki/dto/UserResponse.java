@@ -1,7 +1,6 @@
 package com.beloboki.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
