@@ -1,15 +1,15 @@
 services:
-  db:
+  mydb:
     image: postgres:17
     container_name: postgres-db
     environment:
       POSTGRES_DB: mydb
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - mydb_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user -d mydb" ]
       interval: 10s
@@ -18,12 +18,13 @@ services:
 
   redis:
     container_name: redis
-    hostname: ${REDIS_HOST}
+    hostname: redis
     image: redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
   redis-commander:
     container_name: redis-commander
     hostname: redis-commander
@@ -42,17 +43,21 @@ services:
       ports:
         - "8080:8080"
       depends_on:
-        db:
+        mydb:
           condition: service_healthy
         redis:
           condition: service_started
+      env_file:
+        - .env
       environment:
-        SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-        DATABASE_URL: ${DATABASE_URL}
-        DATABASE_USERNAME: ${POSTGRES_USER}
-        DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-        REDIS_HOST: ${REDIS_HOST}
-        REDIS_PORT: ${REDIS_PORT}
+        - SPRING_PROFILES_ACTIVE=docker
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://mydb:5432/mydb
+        - SPRING_DATASOURCE_USERNAME=user
+        - SPRING_DATASOURCE_PASSWORD=pass
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - APP_JWT_SECRET=x9V4bN7mQ2pL5wR8zK3jH6cF1gT9vD4sY8nB2mX5cZ7vM3kP9lJ4hG1rT6dW8yN2
+
 volumes:
-  db_data:
+  mydb_data:
   redis_data:

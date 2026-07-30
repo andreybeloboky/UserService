@@ -65,6 +65,14 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-testcontainers</artifactId>
       <scope>test</scope>
     </dependency>
@@ -73,6 +81,11 @@
       <artifactId>junit-jupiter</artifactId>
       <version>1.21.4</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.11.5</version>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -186,7 +199,7 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${spotless-version}</version>
         <configuration>
-          <ratchetFrom>origin/main</ratchetFrom>
+          <ratchetFrom>NONE</ratchetFrom>
           <formats>
             <format>
               <includes>

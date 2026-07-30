@@ -26,8 +26,9 @@ public class UserService {
     private final UserDAO userDAO;
     private final UserMapper userMapper;
 
-    public void save(UserRequest userRequest) {
-        userDAO.saveAndFlush(userMapper.userRequestToUser(userRequest));
+    public UserResponse save(UserRequest userRequest) {
+        User user = userDAO.saveAndFlush(userMapper.userRequestToUser(userRequest));
+        return userMapper.userToUserResponse(user);
     }
 
     @Cacheable(key = "#id")

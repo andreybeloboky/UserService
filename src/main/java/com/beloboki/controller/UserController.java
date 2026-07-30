@@ -1,14 +1,18 @@
 package com.beloboki.controller;
 
+import com.beloboki.config.CurrentUser;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
 import com.beloboki.service.UserService;
 import jakarta.validation.Valid;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserResponse>> retrieveFilterNameAndSurnameUsers(
             @RequestParam(value = "name", required = false) String name,
@@ -35,16 +40,22 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN, USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> retrieveById(@PathVariable("id") Long userId) {
+    public ResponseEntity<UserResponse> retrieveById(
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
+        if (!Objects.equals(currentUser.userId(), userId)) {
+            throw new IllegalArgumentException("WRONG!!");
+        }
         return ResponseEntity.ok().body(userService.retrieveById(userId));
     }
 
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userRequest) {
-        userService.save(userRequest);
+    public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
+        UserResponse response = userService.save(userRequest);
         log.info("New user was successfully saved to the database");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
