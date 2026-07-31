@@ -50,7 +50,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.retrieveById(userId));
     }
 
-    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponse> save(@Valid @RequestBody UserRequest userRequest) {
         UserResponse response = userService.save(userRequest);

@@ -19,7 +19,6 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <maven-compiler-plugin>3.13.0</maven-compiler-plugin>
     <xml-format-maven-plugin>4.3.0</xml-format-maven-plugin>
-    <maven-failsafe-plugin>3.5.0</maven-failsafe-plugin>
     <jacoco-maven-plugin>0.8.15</jacoco-maven-plugin>
     <jacoco.argLine></jacoco.argLine>
     <surefire-plugin>3.1.2</surefire-plugin>
@@ -34,6 +33,11 @@
       <artifactId>jakarta.validation-api</artifactId>
       <version>${jakarta.validation}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate.validator</groupId>
@@ -119,6 +123,11 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

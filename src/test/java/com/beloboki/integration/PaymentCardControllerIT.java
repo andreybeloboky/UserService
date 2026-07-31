@@ -12,8 +12,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+@WithMockUser(
+        username = "user",
+        authorities = {"ADMIN"})
 public class PaymentCardControllerIT extends AbstractIT {
 
     @Autowired private WebTestClient webTestClient;
