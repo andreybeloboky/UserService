@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PutMapping("/{userId}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> update(
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("id") Long userId,
