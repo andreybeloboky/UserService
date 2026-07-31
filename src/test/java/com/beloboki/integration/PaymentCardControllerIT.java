@@ -8,16 +8,18 @@ import com.beloboki.model.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@WithMockUser(
-        username = "user",
-        authorities = {"ADMIN"})
+
 public class PaymentCardControllerIT extends AbstractIT {
 
     @Autowired private WebTestClient webTestClient;
@@ -25,6 +27,11 @@ public class PaymentCardControllerIT extends AbstractIT {
     @Autowired private PaymentCardDAO paymentCardDAO;
 
     @Autowired private UserDAO userDAO;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    private String token;
 
     private User user;
 
@@ -61,6 +68,13 @@ public class PaymentCardControllerIT extends AbstractIT {
                                 .number(CARD_NUMBER)
                                 .user(user)
                                 .build());
+
+        token = Jwts.builder()
+                .setSubject("testUser")
+                .claim("userId", user.getId())
+                .claim("role", "ADMIN")
+                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     @Test
@@ -68,6 +82,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectBody()
                 .jsonPath("$.id")
@@ -94,6 +109,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                                         .queryParam("pageNumber", 0)
                                         .queryParam("pageSize", 10)
                                         .build())
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -113,6 +129,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/users/{userId}/payment-cards", user.getId())
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -136,6 +153,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .post()
                 .uri("/api/users/{userId}/payment-cards", user.getId())
                 .bodyValue(request)
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectStatus()
                 .isCreated();
@@ -152,6 +170,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .put()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization","Bearer " +  token)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -171,6 +190,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                                         .path("/api/payment-cards/{id}/status")
                                         .queryParam("status", true)
                                         .build(paymentCard.getId()))
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -184,6 +204,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .delete()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization","Bearer " +  token)
                 .exchange()
                 .expectStatus()
                 .isNoContent();

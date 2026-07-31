@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,9 +45,7 @@ public class PaymentCardController {
     @GetMapping("/api/users/{userId}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("userId") Long userId) {
-        if (!Objects.equals(currentUser.userId(), userId)) {
-            throw new IllegalArgumentException("WRONG!!");
-        }
+        validate(currentUser.userId(), userId);
         return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
     }
 
@@ -56,9 +55,7 @@ public class PaymentCardController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("userId") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        if (!Objects.equals(currentUser.userId(), userId)) {
-            throw new IllegalArgumentException("WRONG!!");
-        }
+        validate(currentUser.userId(), userId);
         paymentCardService.save(userId, paymentCardRequest);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -89,5 +86,11 @@ public class PaymentCardController {
         paymentCardService.deleteById(id);
         log.info("Payment card with ID {} was successfully deleted", id);
         return ResponseEntity.noContent().build();
+    }
+
+    private void validate(Long currentUser, Long userId){
+        if (!Objects.equals(currentUser, userId)) {
+            throw new AuthorizationDeniedException("Access denied");
+        }
     }
 }
