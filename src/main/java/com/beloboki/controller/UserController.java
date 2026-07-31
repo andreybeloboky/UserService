@@ -5,9 +5,7 @@ import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
 import com.beloboki.service.UserService;
 import jakarta.validation.Valid;
-
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,8 +43,8 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> retrieveById(@AuthenticationPrincipal CurrentUser currentUser,
-                                                     @PathVariable("id") Long userId) {
+    public ResponseEntity<UserResponse> retrieveById(
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
         validate(currentUser.userId(), userId);
         return ResponseEntity.ok().body(userService.retrieveById(userId));
     }
@@ -60,8 +58,10 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/{userId}")
-    public ResponseEntity<Void> update(@AuthenticationPrincipal CurrentUser currentUser,
-                                       @PathVariable("id") Long userId, @Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<Void> update(
+            @AuthenticationPrincipal CurrentUser currentUser,
+            @PathVariable("id") Long userId,
+            @Valid @RequestBody UserRequest userRequest) {
         validate(currentUser.userId(), userId);
         userService.updateById(userId, userRequest);
         log.info("User with ID {} was successfully updated", userId);
@@ -70,8 +70,10 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateStatus(@AuthenticationPrincipal CurrentUser currentUser,
-                                             @PathVariable("id") Long userId, @RequestParam("status") Boolean status) {
+    public ResponseEntity<Void> updateStatus(
+            @AuthenticationPrincipal CurrentUser currentUser,
+            @PathVariable("id") Long userId,
+            @RequestParam("status") Boolean status) {
         validate(currentUser.userId(), userId);
         userService.updateStatus(userId, status);
         log.info("Status for user ID {} was successfully changed", userId);
@@ -80,15 +82,15 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@AuthenticationPrincipal CurrentUser currentUser,
-                                           @PathVariable("id") Long userId) {
+    public ResponseEntity<Void> deleteById(
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
         validate(currentUser.userId(), userId);
         userService.deleteById(userId);
         log.info("User with ID {} was successfully deleted", userId);
         return ResponseEntity.noContent().build();
     }
 
-    private void validate(Long currentUser, Long userId){
+    private void validate(Long currentUser, Long userId) {
         if (!Objects.equals(currentUser, userId)) {
             throw new AuthorizationDeniedException("Access denied");
         }

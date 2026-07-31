@@ -3,12 +3,11 @@ package com.beloboki.integration;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.model.User;
-import java.time.LocalDate;
-import java.time.Month;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import java.time.LocalDate;
+import java.time.Month;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,12 +48,14 @@ public class UserControllerIT extends AbstractIT {
                                 .active(false)
                                 .build());
 
-        token = Jwts.builder()
-                .setSubject("testUser")
-                .claim("userId", user.getId())
-                .claim("role", "ADMIN")
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
-                .compact();
+        token =
+                Jwts.builder()
+                        .setSubject("testUser")
+                        .claim("userId", user.getId())
+                        .claim("role", "ADMIN")
+                        .signWith(
+                                Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
+                        .compact();
     }
 
     @Test
@@ -62,7 +63,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/users/{id}", user.getId())
-                .header("Authorization","Bearer " +  token)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -96,7 +97,7 @@ public class UserControllerIT extends AbstractIT {
                                         .queryParam("page", 0)
                                         .queryParam("size", 10)
                                         .build())
-                .header("Authorization","Bearer " +  token)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -148,7 +149,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .put()
                 .uri("/api/users/{id}", user.getId())
-                .header("Authorization","Bearer " +  token)
+                .header("Authorization", "Bearer " + token)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -172,7 +173,7 @@ public class UserControllerIT extends AbstractIT {
                                         .path("/api/users/{id}/status")
                                         .queryParam("status", true)
                                         .build(user.getId()))
-                .header("Authorization","Bearer " +  token)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -186,7 +187,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .delete()
                 .uri("/api/users/{id}", user.getId())
-                .header("Authorization","Bearer " +  token)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isNoContent();

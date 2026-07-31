@@ -88,7 +88,7 @@ public class PaymentCardController {
         return ResponseEntity.noContent().build();
     }
 
-    private void validate(Long currentUser, Long userId){
+    private void validate(Long currentUser, Long userId) {
         if (!Objects.equals(currentUser, userId)) {
             throw new AuthorizationDeniedException("Access denied");
         }
