@@ -42,18 +42,18 @@ public class PaymentCardController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/api/users/{userId}/payment-cards")
+    @GetMapping("/api/users/{id}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
-            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("userId") Long userId) {
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
         validate(currentUser.userId(), userId);
         return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @PostMapping("/api/users/{userId}/payment-cards")
+    @PostMapping("/api/users/{id}/payment-cards")
     public ResponseEntity<Void> save(
             @AuthenticationPrincipal CurrentUser currentUser,
-            @PathVariable("userId") Long userId,
+            @PathVariable("id") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
         validate(currentUser.userId(), userId);
         paymentCardService.save(userId, paymentCardRequest);
