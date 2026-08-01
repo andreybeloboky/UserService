@@ -50,7 +50,7 @@ public class UserControllerIT extends AbstractIT {
 
         token =
                 Jwts.builder()
-                        .setSubject("testUser")
+                        .setSubject(NAME)
                         .claim("userId", user.getId())
                         .claim("role", "ADMIN")
                         .signWith(

@@ -20,7 +20,7 @@
     <maven-compiler-plugin>3.13.0</maven-compiler-plugin>
     <xml-format-maven-plugin>4.3.0</xml-format-maven-plugin>
     <jacoco-maven-plugin>0.8.15</jacoco-maven-plugin>
-    <jacoco.argLine></jacoco.argLine>
+    <jacoco.argLine/>
     <surefire-plugin>3.1.2</surefire-plugin>
     <failsafe-plugin>3.2.1</failsafe-plugin>
     <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
@@ -36,7 +36,8 @@
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
-      <artifactId>jjwt-jackson</artifactId> <!-- или jjwt-gson -->
+      <artifactId>jjwt-jackson</artifactId>
+      <!-- или jjwt-gson -->
       <version>0.11.5</version>
       <scope>runtime</scope>
     </dependency>
