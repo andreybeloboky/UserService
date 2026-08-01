@@ -3,6 +3,7 @@ package com.beloboki.controller;
 import com.beloboki.config.CurrentUser;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
+import com.beloboki.model.Role;
 import com.beloboki.service.PaymentCardService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -45,7 +46,7 @@ public class PaymentCardController {
     @GetMapping("/api/users/{id}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
-        validate(currentUser.userId(), userId);
+        validate(currentUser.userId(), userId, currentUser.role());
         return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
     }
 
@@ -55,7 +56,7 @@ public class PaymentCardController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("id") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        validate(currentUser.userId(), userId);
+        validate(currentUser.userId(), userId, currentUser.role());
         paymentCardService.save(userId, paymentCardRequest);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -88,8 +89,8 @@ public class PaymentCardController {
         return ResponseEntity.noContent().build();
     }
 
-    private void validate(Long currentUser, Long userId) {
-        if (!Objects.equals(currentUser, userId)) {
+    private void validate(Long currentUser, Long userId, String role) {
+        if (!Objects.equals(currentUser, userId) || (Objects.equals(role, String.valueOf(Role.ADMIN)))) {
             throw new AuthorizationDeniedException("Access denied");
         }
     }
