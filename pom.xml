@@ -25,7 +25,7 @@
     <junit-jupiter>1.21.4</junit-jupiter>
     <postgresql>1.21.4</postgresql>
     <testcontainers-redis>2.2.3</testcontainers-redis>
-    <jacoco.argLine/>
+    <jacoco.argLine></jacoco.argLine>
     <surefire-plugin>3.1.2</surefire-plugin>
     <failsafe-plugin>3.2.1</failsafe-plugin>
     <sonar.projectKey>andreybeloboky_UserService</sonar.projectKey>
