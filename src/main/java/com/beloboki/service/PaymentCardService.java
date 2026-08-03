@@ -35,7 +35,8 @@ public class PaymentCardService {
 
     @CacheEvict(cacheNames = "users", key = "#userId")
     @Transactional
-    public void save(Long userId, PaymentCardRequest paymentCardRequest) {
+    public void save(Long userId, PaymentCardRequest paymentCardRequest, CurrentUser currentUser) {
+        validate(userId, currentUser.userId(), currentUser.role());
         PaymentCard paymentCard =
                 paymentCardMapper.paymentCardRequestToPaymentCard(paymentCardRequest);
         User user = userService.retrieveByUserIdLocking(userId);
@@ -56,7 +57,8 @@ public class PaymentCardService {
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentCardResponse> retrieveAllCardsByUserId(Long id) {
+    public List<PaymentCardResponse> retrieveAllCardsByUserId(Long id, CurrentUser currentUser) {
+        validate(currentUser.userId(), id, currentUser.role());
         List<PaymentCard> paymentCards = paymentCardDAO.findAllCardByUserId(id);
         return paymentCards.stream().map(paymentCardMapper::cardToCardResponse).toList();
     }

@@ -43,8 +43,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> retrieveById(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
-        userService.validate(currentUser.userId(), userId, currentUser.role());
-        return ResponseEntity.ok().body(userService.retrieveById(userId));
+        return ResponseEntity.ok().body(userService.retrieveById(userId, currentUser));
     }
 
     @PostMapping
@@ -60,8 +59,7 @@ public class UserController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("id") Long userId,
             @Valid @RequestBody UserRequest userRequest) {
-        userService.validate(currentUser.userId(), userId, currentUser.role());
-        userService.updateById(userId, userRequest);
+        userService.updateById(userId, userRequest, currentUser);
         log.info("User with ID {} was successfully updated", userId);
         return ResponseEntity.ok().build();
     }
@@ -75,11 +73,9 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(
-            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
-        userService.validate(currentUser.userId(), userId, currentUser.role());
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long userId) {
         userService.deleteById(userId);
         log.info("User with ID {} was successfully deleted", userId);
         return ResponseEntity.noContent().build();

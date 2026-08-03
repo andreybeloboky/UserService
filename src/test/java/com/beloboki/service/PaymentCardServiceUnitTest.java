@@ -41,7 +41,9 @@ public class PaymentCardServiceUnitTest {
     @InjectMocks private PaymentCardService paymentCardService;
 
     private PaymentCardRequest paymentCardRequest;
+
     private PaymentCardResponse paymentCardResponse;
+
     private CurrentUser currentUser;
 
     @BeforeEach
@@ -77,7 +79,7 @@ public class PaymentCardServiceUnitTest {
                 .thenReturn(paymentCard);
         when(userService.retrieveByUserIdLocking(1L)).thenReturn(userMock);
 
-        paymentCardService.save(userMock.getId(), paymentCardRequest);
+        paymentCardService.save(userMock.getId(), paymentCardRequest, currentUser);
         ArgumentCaptor<PaymentCard> paymentCardArgumentCaptor =
                 ArgumentCaptor.forClass(PaymentCard.class);
 
@@ -97,7 +99,7 @@ public class PaymentCardServiceUnitTest {
 
         Assertions.assertThrows(
                 EntityNotFoundException.class,
-                () -> paymentCardService.save(1L, paymentCardRequest));
+                () -> paymentCardService.save(1L, paymentCardRequest, currentUser));
     }
 
     @Test
@@ -123,7 +125,7 @@ public class PaymentCardServiceUnitTest {
 
         Assertions.assertThrows(
                 CardLimitException.class,
-                () -> paymentCardService.save(userMock.getId(), paymentCardRequest));
+                () -> paymentCardService.save(userMock.getId(), paymentCardRequest, currentUser));
     }
 
     @Test
@@ -161,7 +163,7 @@ public class PaymentCardServiceUnitTest {
         when(paymentCardMapper.cardToCardResponse(first)).thenReturn(paymentCardResponse);
 
         List<PaymentCardResponse> retrieveAllCardsByUserId =
-                paymentCardService.retrieveAllCardsByUserId(1L);
+                paymentCardService.retrieveAllCardsByUserId(1L, currentUser);
 
         Assertions.assertEquals(1, retrieveAllCardsByUserId.size());
         Assertions.assertEquals("1234567891234", retrieveAllCardsByUserId.getFirst().number());

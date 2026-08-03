@@ -1,5 +1,6 @@
 package com.beloboki.service;
 
+import com.beloboki.config.CurrentUser;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
@@ -36,7 +37,8 @@ public class UserService {
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
-    public UserResponse retrieveById(Long id) {
+    public UserResponse retrieveById(Long id, CurrentUser currentUser) {
+        validate(currentUser.userId(), id, currentUser.role());
         User user = retrieveByUserId(id);
         return userMapper.userToUserResponse(user);
     }
@@ -50,7 +52,8 @@ public class UserService {
 
     @CacheEvict(key = "#id")
     @Transactional
-    public void updateById(Long id, UserRequest userRequest) {
+    public void updateById(Long id, UserRequest userRequest, CurrentUser currentUser) {
+        validate(currentUser.userId(), id, currentUser.role());
         User user = userMapper.userRequestToUser(userRequest);
         User userFromDB = retrieveByUserId(id);
         user.setId(userFromDB.getId());

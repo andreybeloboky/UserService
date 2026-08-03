@@ -44,8 +44,8 @@ public class PaymentCardController {
     @GetMapping("/api/users/{id}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
-        paymentCardService.validate(currentUser.userId(), userId, currentUser.role());
-        return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
+        return ResponseEntity.ok()
+                .body(paymentCardService.retrieveAllCardsByUserId(userId, currentUser));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -54,8 +54,7 @@ public class PaymentCardController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("id") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        paymentCardService.validate(currentUser.userId(), userId, currentUser.role());
-        paymentCardService.save(userId, paymentCardRequest);
+        paymentCardService.save(userId, paymentCardRequest, currentUser);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

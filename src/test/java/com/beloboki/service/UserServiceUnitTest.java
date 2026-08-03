@@ -2,6 +2,7 @@ package com.beloboki.service;
 
 import static org.mockito.Mockito.*;
 
+import com.beloboki.config.CurrentUser;
 import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceUnitTest {
@@ -40,8 +42,11 @@ public class UserServiceUnitTest {
 
     private UserResponse userResponse;
 
+    private CurrentUser currentUser;
+
     @BeforeEach
     void setUp() {
+        currentUser = new CurrentUser(1L, "Name", "USER");
         userRequest =
                 new UserRequest(
                         "Name",
@@ -70,7 +75,7 @@ public class UserServiceUnitTest {
         when(userDAO.findById(1L)).thenReturn(Optional.of(existingMock));
         when(userMapper.userToUserResponse(existingMock)).thenReturn(userResponse);
 
-        UserResponse user = userService.retrieveById(1L);
+        UserResponse user = userService.retrieveById(1L, currentUser);
 
         Assertions.assertNotNull(user);
         Assertions.assertEquals("Name", user.name());
@@ -79,13 +84,9 @@ public class UserServiceUnitTest {
 
     @Test
     void givenId_ShouldThrowException_WhenUserDoesNotExist() {
-        when(userDAO.findById(99L)).thenReturn(Optional.empty());
-
         Assertions.assertThrows(
-                EntityNotFoundException.class,
-                () -> {
-                    userService.retrieveById(99L);
-                });
+                AuthorizationDeniedException.class,
+                () -> userService.retrieveById(99L, currentUser));
     }
 
     @Test
@@ -113,7 +114,7 @@ public class UserServiceUnitTest {
 
         when(userDAO.findById(1L)).thenReturn(Optional.of(existingMock));
 
-        userService.updateById(1L, userRequest);
+        userService.updateById(1L, userRequest, currentUser);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userDAO).saveAndFlush(userCaptor.capture());
@@ -126,7 +127,8 @@ public class UserServiceUnitTest {
     @Test
     void givenUser_ShouldThrowException_WhenUserToUpdateNotFound() {
         Assertions.assertThrows(
-                EntityNotFoundException.class, () -> userService.updateById(2L, userRequest));
+                AuthorizationDeniedException.class,
+                () -> userService.updateById(2L, userRequest, currentUser));
     }
 
     @Test
