@@ -1,21 +1,25 @@
 package com.beloboki.service;
 
+import com.beloboki.config.CurrentUser;
 import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
 import com.beloboki.exception.CardLimitException;
 import com.beloboki.mapper.PaymentCardMapper;
 import com.beloboki.model.PaymentCard;
+import com.beloboki.model.Role;
 import com.beloboki.model.User;
 import com.beloboki.specification.PaymentCardSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +49,9 @@ public class PaymentCardService {
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
-    public PaymentCardResponse retrieveById(Long id) {
+    public PaymentCardResponse retrieveById(Long id, CurrentUser currentUser) {
         PaymentCard paymentCard = findCardById(id);
+        validate(paymentCard.getUser().getId(), currentUser.userId(), currentUser.role());
         return paymentCardMapper.cardToCardResponse(paymentCard);
     }
 
@@ -111,5 +116,12 @@ public class PaymentCardService {
                         () ->
                                 new EntityNotFoundException(
                                         "Not found user by id = %s".formatted(id)));
+    }
+
+    public void validate(Long currentUser, Long userId, String role) {
+        if (!Objects.equals(currentUser, userId)
+                && (!Objects.equals(role, String.valueOf(Role.ADMIN)))) {
+            throw new AuthorizationDeniedException("Access denied");
+        }
     }
 }

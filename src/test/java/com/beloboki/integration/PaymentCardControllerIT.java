@@ -5,9 +5,6 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.model.PaymentCard;
 import com.beloboki.model.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -15,7 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class PaymentCardControllerIT extends AbstractIT {
@@ -25,9 +21,6 @@ public class PaymentCardControllerIT extends AbstractIT {
     @Autowired private PaymentCardDAO paymentCardDAO;
 
     @Autowired private UserDAO userDAO;
-
-    @Value("${jwt.secret}")
-    private String jwtSecret;
 
     private String token;
 
@@ -67,14 +60,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                                 .user(user)
                                 .build());
 
-        token =
-                Jwts.builder()
-                        .setSubject("testUser")
-                        .claim("userId", user.getId())
-                        .claim("role", "ADMIN")
-                        .signWith(
-                                Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
-                        .compact();
+        token = generateTestToken(USER_NAME, user.getId(), "ADMIN");
     }
 
     @Test

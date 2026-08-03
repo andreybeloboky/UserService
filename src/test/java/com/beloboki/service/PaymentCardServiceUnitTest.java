@@ -2,6 +2,7 @@ package com.beloboki.service;
 
 import static org.mockito.Mockito.*;
 
+import com.beloboki.config.CurrentUser;
 import com.beloboki.dao.PaymentCardDAO;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
@@ -41,9 +42,12 @@ public class PaymentCardServiceUnitTest {
 
     private PaymentCardRequest paymentCardRequest;
     private PaymentCardResponse paymentCardResponse;
+    private CurrentUser currentUser;
 
     @BeforeEach
     void setUp() {
+        currentUser = new CurrentUser(1L, "Name", "USER");
+
         paymentCardRequest =
                 new PaymentCardRequest(
                         "Holder",
@@ -124,13 +128,16 @@ public class PaymentCardServiceUnitTest {
 
     @Test
     void givenId_ShouldReturnCard_WhenCardExists() {
-        PaymentCard mockCard = PaymentCard.builder().id(1L).number("1234567891234").build();
+        User user = new User();
+        user.setId(1L);
+        PaymentCard mockCard =
+                PaymentCard.builder().id(1L).number("1234567891234").user(user).build();
 
         when(paymentCardDAO.findById(1L)).thenReturn(Optional.of(mockCard));
         when(paymentCardMapper.cardToCardResponse(any(PaymentCard.class)))
                 .thenReturn(paymentCardResponse);
 
-        PaymentCardResponse paymentCard = paymentCardService.retrieveById(1L);
+        PaymentCardResponse paymentCard = paymentCardService.retrieveById(1L, currentUser);
 
         Assertions.assertNotNull(paymentCard);
         Assertions.assertEquals("1234567891234", paymentCard.number());
@@ -140,8 +147,9 @@ public class PaymentCardServiceUnitTest {
     @Test
     void givenCardId_ShouldThrownException_WhenCardNotExist() {
         Assertions.assertThrows(
-                EntityNotFoundException.class, () -> paymentCardService.retrieveById(1L));
-        verify(paymentCardDAO, times(1)).findById(1L);
+                EntityNotFoundException.class,
+                () -> paymentCardService.retrieveById(2L, currentUser));
+        verify(paymentCardDAO, times(1)).findById(2L);
     }
 
     @Test

@@ -3,18 +3,15 @@ package com.beloboki.controller;
 import com.beloboki.config.CurrentUser;
 import com.beloboki.dto.PaymentCardRequest;
 import com.beloboki.dto.PaymentCardResponse;
-import com.beloboki.model.Role;
 import com.beloboki.service.PaymentCardService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,17 +33,18 @@ public class PaymentCardController {
                 .body(paymentCardService.retrieveFilterByHolder(holder, pageNumber, pageSize));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/api/payment-cards/{id}")
-    public ResponseEntity<PaymentCardResponse> retrieveById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(paymentCardService.retrieveById(id));
+    public ResponseEntity<PaymentCardResponse> retrieveById(
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(paymentCardService.retrieveById(id, currentUser));
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/api/users/{id}/payment-cards")
     public ResponseEntity<List<PaymentCardResponse>> retrieveAllCardsByUserId(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("id") Long userId) {
-        validate(currentUser.userId(), userId, currentUser.role());
+        paymentCardService.validate(currentUser.userId(), userId, currentUser.role());
         return ResponseEntity.ok().body(paymentCardService.retrieveAllCardsByUserId(userId));
     }
 
@@ -56,7 +54,7 @@ public class PaymentCardController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @PathVariable("id") Long userId,
             @Valid @RequestBody PaymentCardRequest paymentCardRequest) {
-        validate(currentUser.userId(), userId, currentUser.role());
+        paymentCardService.validate(currentUser.userId(), userId, currentUser.role());
         paymentCardService.save(userId, paymentCardRequest);
         log.info("New payment card was successfully created for User ID: {}", userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -87,12 +85,5 @@ public class PaymentCardController {
         paymentCardService.deleteById(id);
         log.info("Payment card with ID {} was successfully deleted", id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void validate(Long currentUser, Long userId, String role) {
-        if (!Objects.equals(currentUser, userId)
-                || (!Objects.equals(role, String.valueOf(Role.ADMIN)))) {
-            throw new AuthorizationDeniedException("Access denied");
-        }
     }
 }

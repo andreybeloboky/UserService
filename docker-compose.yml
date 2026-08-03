@@ -6,6 +6,8 @@ services:
       POSTGRES_DB: mydb
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - user_backend
     ports:
       - "5432:5432"
     volumes:
@@ -20,6 +22,8 @@ services:
     container_name: redis
     hostname: redis
     image: redis
+    networks:
+      - user_backend
     ports:
       - "6379:6379"
     volumes:
@@ -32,6 +36,8 @@ services:
     restart: always
     environment:
       - REDIS_HOSTS=local:redis:6379
+    networks:
+      - user_backend
     ports:
       - "8081:8081"
 
@@ -50,7 +56,8 @@ services:
       env_file:
         - .env
       networks:
-        - bridge
+        - shared_network
+        - user_backend
       environment:
         - SPRING_PROFILES_ACTIVE=docker
         - SPRING_DATASOURCE_URL=jdbc:postgresql://mydb:5432/mydb
@@ -64,5 +71,7 @@ volumes:
   mydb_data:
   redis_data:
 networks:
-  bridge:
+  user_backend:
+    driver: bridge
+  shared_network:
     external: true

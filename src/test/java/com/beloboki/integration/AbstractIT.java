@@ -1,6 +1,9 @@
 package com.beloboki.integration;
 
 import com.redis.testcontainers.RedisContainer;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,6 +21,18 @@ public class AbstractIT {
 
     private static final RedisContainer REDIS = new RedisContainer(DockerImageName.parse("redis"));
 
+    private static final String TEST_SECRET_STRING = "my_ultra_secure_test_secret_key!!";
+
+    protected String generateTestToken(String subject, Long userId, String role) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim("userId", userId)
+                .claim("role", role)
+                .signWith(
+                        Keys.hmacShaKeyFor(TEST_SECRET_STRING.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     static {
         POSTGRES.start();
         REDIS.start();
@@ -31,5 +46,7 @@ public class AbstractIT {
 
         registry.add("spring.data.redis.host", REDIS::getHost);
         registry.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
+
+        registry.add("jwt.secret", () -> TEST_SECRET_STRING);
     }
 }
