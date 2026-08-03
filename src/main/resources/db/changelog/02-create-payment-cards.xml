@@ -14,7 +14,7 @@
       <column name="holder" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="expiration_date" type="DATE">
+      <column name="expiration_date" type="TIMESTAMP">
         <constraints nullable="false"/>
       </column>
       <column name="created_at" type="TIMESTAMP">

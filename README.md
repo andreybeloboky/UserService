@@ -1,6 +1,6 @@
 ## UserService Task
 
-The primary objective of this assignment is to build a robust backend Java web application for tracking work items and managing users with their payment cards. The service is built using **Java 25**, **Spring Boot 4.0**, **Spring Data JPA**, and **Maven**. It utilizes **Liquibase** for database migrations, **Redis** for caching, and is fully containerized using **Docker**.
+The primary objective of this assignment is to build a robust backend Java web application for tracking work items and managing users with their payment cards. The service is built using **Java 21**, **Spring Boot 4.0**, **Spring Data JPA**, and **Maven**. It utilizes **Liquibase** for database migrations, **Redis** for caching, and is fully containerized using **Docker**.
 
 ---
 

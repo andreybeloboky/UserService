@@ -22,6 +22,8 @@ public class PaymentCardControllerIT extends AbstractIT {
 
     @Autowired private UserDAO userDAO;
 
+    private String token;
+
     private User user;
 
     private PaymentCard paymentCard;
@@ -57,6 +59,8 @@ public class PaymentCardControllerIT extends AbstractIT {
                                 .number(CARD_NUMBER)
                                 .user(user)
                                 .build());
+
+        token = generateTestToken(USER_NAME, user.getId(), "ADMIN");
     }
 
     @Test
@@ -64,6 +68,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectBody()
                 .jsonPath("$.id")
@@ -90,6 +95,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                                         .queryParam("pageNumber", 0)
                                         .queryParam("pageSize", 10)
                                         .build())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -109,6 +115,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/users/{userId}/payment-cards", user.getId())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -132,6 +139,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                 .post()
                 .uri("/api/users/{userId}/payment-cards", user.getId())
                 .bodyValue(request)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isCreated();
@@ -148,6 +156,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .put()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization", "Bearer " + token)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -167,6 +176,7 @@ public class PaymentCardControllerIT extends AbstractIT {
                                         .path("/api/payment-cards/{id}/status")
                                         .queryParam("status", true)
                                         .build(paymentCard.getId()))
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -180,6 +190,7 @@ public class PaymentCardControllerIT extends AbstractIT {
         webTestClient
                 .delete()
                 .uri("/api/payment-cards/{id}", paymentCard.getId())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isNoContent();

@@ -19,6 +19,8 @@ public class UserControllerIT extends AbstractIT {
 
     private User user;
 
+    private String token;
+
     private static final String NAME = "Name";
     private static final String SURNAME = "Surname";
     private static final String EMAIL = "test@gmail.com";
@@ -38,6 +40,8 @@ public class UserControllerIT extends AbstractIT {
                                 .email(EMAIL)
                                 .active(false)
                                 .build());
+
+        token = generateTestToken(NAME, user.getId(), "ADMIN");
     }
 
     @Test
@@ -45,6 +49,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .get()
                 .uri("/api/users/{id}", user.getId())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -78,6 +83,7 @@ public class UserControllerIT extends AbstractIT {
                                         .queryParam("page", 0)
                                         .queryParam("size", 10)
                                         .build())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -129,6 +135,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .put()
                 .uri("/api/users/{id}", user.getId())
+                .header("Authorization", "Bearer " + token)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus()
@@ -152,6 +159,7 @@ public class UserControllerIT extends AbstractIT {
                                         .path("/api/users/{id}/status")
                                         .queryParam("status", true)
                                         .build(user.getId()))
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -165,6 +173,7 @@ public class UserControllerIT extends AbstractIT {
         webTestClient
                 .delete()
                 .uri("/api/users/{id}", user.getId())
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus()
                 .isNoContent();

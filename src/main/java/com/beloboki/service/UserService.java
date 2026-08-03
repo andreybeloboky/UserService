@@ -4,9 +4,11 @@ import com.beloboki.dao.UserDAO;
 import com.beloboki.dto.UserRequest;
 import com.beloboki.dto.UserResponse;
 import com.beloboki.mapper.UserMapper;
+import com.beloboki.model.Role;
 import com.beloboki.model.User;
 import com.beloboki.specification.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +29,9 @@ public class UserService {
     private final UserDAO userDAO;
     private final UserMapper userMapper;
 
-    public void save(UserRequest userRequest) {
-        userDAO.saveAndFlush(userMapper.userRequestToUser(userRequest));
+    public UserResponse save(UserRequest userRequest) {
+        User user = userDAO.saveAndFlush(userMapper.userRequestToUser(userRequest));
+        return userMapper.userToUserResponse(user);
     }
 
     @Cacheable(key = "#id")
@@ -102,6 +106,13 @@ public class UserService {
                         () ->
                                 new EntityNotFoundException(
                                         "Not found user by id = %s".formatted(id)));
+    }
+
+    public void validate(Long currentUser, Long userId, String role) {
+        if (!Objects.equals(currentUser, userId)
+                && (!Objects.equals(role, String.valueOf(Role.ADMIN)))) {
+            throw new AuthorizationDeniedException("Access denied");
+        }
     }
 
     private User retrieveByUserId(Long id) {
