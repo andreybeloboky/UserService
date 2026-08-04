@@ -261,6 +261,7 @@ public class UserServiceUnitTest {
     @Test
     void givenUserId_ShouldThrowException_WhenUserNotFound() {
         when(userDAO.findById(1L)).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> userService.retrieveById(1L, currentUser));
+        Assertions.assertThrows(
+                EntityNotFoundException.class, () -> userService.retrieveById(1L, currentUser));
     }
 }
