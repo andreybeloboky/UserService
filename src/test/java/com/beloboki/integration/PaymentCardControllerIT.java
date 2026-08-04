@@ -197,4 +197,17 @@ public class PaymentCardControllerIT extends AbstractIT {
 
         Assertions.assertFalse(paymentCardDAO.findById(paymentCard.getId()).isPresent());
     }
+
+    @Test
+    void retrieveAllCardsByUserId_shouldReturnForbidden_whenUserRequestsForeignCards() {
+        String foreignUserToken = generateTestToken("TEST", 1000L, "USER");
+
+        webTestClient
+                .get()
+                .uri("/api/payment-cards/{id}", user.getId())
+                .header("Authorization", "Bearer " + foreignUserToken)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
 }

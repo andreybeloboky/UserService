@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,5 +48,15 @@ public class GlobalExceptionHandler {
         responseError.setDetail(e.getMessage());
         responseError.setProperty("errorTime", LocalDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAuthorizationDenied(AuthorizationDeniedException e) {
+        log.error("Handle authorization exception", e);
+        ProblemDetail responseError = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        responseError.setTitle("Unauthorized");
+        responseError.setDetail(e.getMessage());
+        responseError.setProperty("errorTime", LocalDateTime.now().toString());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
     }
 }

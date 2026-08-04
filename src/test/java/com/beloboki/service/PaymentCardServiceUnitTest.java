@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentCardServiceUnitTest {
@@ -250,5 +251,14 @@ public class PaymentCardServiceUnitTest {
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> paymentCardService.retrieveFilterByHolder("", 0, 10));
+    }
+
+    @Test
+    void givenWrongIdAndToken_ShouldReturnThrownException_WhenValidateNotMatch() {
+        CurrentUser currentMock = new CurrentUser(999L, "TEST", "TEST");
+
+        Assertions.assertThrows(
+                AuthorizationDeniedException.class,
+                () -> paymentCardService.retrieveById(1L, currentMock));
     }
 }

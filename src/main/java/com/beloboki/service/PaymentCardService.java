@@ -51,8 +51,8 @@ public class PaymentCardService {
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public PaymentCardResponse retrieveById(Long id, CurrentUser currentUser) {
+        validate(id, currentUser.userId(), currentUser.role());
         PaymentCard paymentCard = findCardById(id);
-        validate(paymentCard.getUser().getId(), currentUser.userId(), currentUser.role());
         return paymentCardMapper.cardToCardResponse(paymentCard);
     }
 
