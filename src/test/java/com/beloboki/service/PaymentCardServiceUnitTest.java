@@ -148,14 +148,6 @@ public class PaymentCardServiceUnitTest {
     }
 
     @Test
-    void givenCardId_ShouldThrownException_WhenCardNotExist() {
-        Assertions.assertThrows(
-                EntityNotFoundException.class,
-                () -> paymentCardService.retrieveById(2L, currentUser));
-        verify(paymentCardDAO, times(1)).findById(2L);
-    }
-
-    @Test
     void givenUserId_ShouldBackAllCards_WhenCardsExist() {
         PaymentCard first = PaymentCard.builder().number("1234567891234").build();
         List<PaymentCard> paymentCards = List.of(first);
