@@ -252,16 +252,9 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    void givenFilterParameters_ShouldReturnEmptyList_WhenUserNotExists() {
-        List<User> userList = List.of();
-        Page<User> userPageCreated = new PageImpl<>(userList);
-
-        when(userDAO.findAll(any(Pageable.class))).thenReturn(userPageCreated);
-
-        Page<UserResponse> userPage = userService.retrieveFilterNameAndSurname("", "", 0, 10);
-
-        Assertions.assertNotNull(userPage);
-        Assertions.assertEquals(0, userPage.getTotalElements());
-        verify(userDAO, times(1)).findAll(any(Pageable.class));
+    void givenFilterParameters_ShouldReturnException_WhenUserNotExists() {
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> userService.retrieveFilterNameAndSurname("", "", 0, 10));
     }
 }

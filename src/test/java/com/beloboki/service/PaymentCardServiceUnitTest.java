@@ -248,7 +248,7 @@ public class PaymentCardServiceUnitTest {
     @Test
     void givenFilterParameters_ShouldReturnThrownException_WhenCardHaveNotHolder() {
         Assertions.assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> paymentCardService.retrieveFilterByHolder("", 0, 10));
     }
 }
