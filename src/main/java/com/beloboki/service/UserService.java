@@ -98,7 +98,7 @@ public class UserService {
                                         "Not found user by id = %s".formatted(id)));
     }
 
-    public void validate(Long currentUser, Long userId, String role) {
+    private void validate(Long currentUser, Long userId, String role) {
         if (!Objects.equals(currentUser, userId)
                 && (!Objects.equals(role, String.valueOf(Role.ADMIN)))) {
             throw new AuthorizationDeniedException("Access denied");

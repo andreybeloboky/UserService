@@ -257,4 +257,10 @@ public class UserServiceUnitTest {
                 NullPointerException.class,
                 () -> userService.retrieveFilterNameAndSurname("", "", 0, 10));
     }
+
+    @Test
+    void givenUserId_ShouldThrowException_WhenUserNotFound() {
+        when(userDAO.findById(1L)).thenReturn(Optional.empty());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> userService.retrieveById(1L, currentUser));
+    }
 }
