@@ -80,26 +80,13 @@ public class UserService {
 
     public Page<UserResponse> retrieveFilterNameAndSurname(
             String name, String surname, int pageNumber, int pageSize) {
-        Specification<User> spec = null;
+        Specification<User> spec =
+                Specification.where(UserSpecifications.hasName(name))
+                        .or(UserSpecifications.hasSurname(surname));
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        if (name != null && !name.isBlank()) {
-            spec = Specification.where(UserSpecifications.hasName(name));
-        }
-
-        if (surname != null && !surname.isBlank()) {
-            if (spec == null) {
-                spec = Specification.where(UserSpecifications.hasSurname(surname));
-            } else {
-                spec = spec.or(UserSpecifications.hasSurname(surname));
-            }
-        }
-
-        if (spec == null) {
-            Page<User> users = userDAO.findAll(pageable);
-            return users.map(userMapper::userToUserResponse);
-        }
         Page<User> users = userDAO.findAll(spec, pageable);
+
         return users.map(userMapper::userToUserResponse);
     }
 

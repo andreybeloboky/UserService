@@ -100,10 +100,6 @@ public class PaymentCardService {
 
     public Page<PaymentCardResponse> retrieveFilterByHolder(
             String holder, int pageNumber, int pageSize) {
-        if (holder == null || holder.isBlank()) {
-            throw new IllegalArgumentException("Holder must not be null");
-        }
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<PaymentCard> paymentCards =
                 paymentCardDAO.findAll(
