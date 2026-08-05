@@ -15,4 +15,7 @@ public interface UserDAO extends JpaRepository<User, Long>, JpaSpecificationExec
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT u FROM User u WHERE u.id = :userId")
     Optional<User> findByUserId(Long userId);
+
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    Optional<User> findByEmail(String email);
 }

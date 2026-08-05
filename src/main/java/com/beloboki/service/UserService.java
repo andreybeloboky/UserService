@@ -98,6 +98,18 @@ public class UserService {
                                         "Not found user by id = %s".formatted(id)));
     }
 
+    public UserResponse retrieveByEmail(CurrentUser currentUser, String email) {
+        User userMail =
+                userDAO.findByEmail(email)
+                        .orElseThrow(
+                                () ->
+                                        new EntityNotFoundException(
+                                                "Not found user by id = %s".formatted(email)));
+
+        validate(currentUser.userId(), userMail.getId(), currentUser.role());
+        return userMapper.userToUserResponse(userMail);
+    }
+
     private void validate(Long currentUser, Long userId, String role) {
         if (!Objects.equals(currentUser, userId)
                 && (!Objects.equals(role, String.valueOf(Role.ADMIN)))) {

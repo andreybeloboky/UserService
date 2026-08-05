@@ -80,4 +80,12 @@ public class UserController {
         log.info("User with ID {} was successfully deleted", userId);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserResponse> retrieveUserByEmail(
+            @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("email") String email) {
+        UserResponse user = userService.retrieveByEmail(currentUser, email);
+        return ResponseEntity.ok(user);
+    }
 }
