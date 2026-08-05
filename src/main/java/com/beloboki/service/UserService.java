@@ -104,7 +104,7 @@ public class UserService {
                         .orElseThrow(
                                 () ->
                                         new EntityNotFoundException(
-                                                "Not found user by id = %s".formatted(email)));
+                                                "Not found user by email = %s".formatted(email)));
 
         validate(currentUser.userId(), userMail.getId(), currentUser.role());
         return userMapper.userToUserResponse(userMail);
