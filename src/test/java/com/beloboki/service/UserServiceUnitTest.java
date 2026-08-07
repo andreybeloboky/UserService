@@ -264,4 +264,31 @@ public class UserServiceUnitTest {
         Assertions.assertThrows(
                 EntityNotFoundException.class, () -> userService.retrieveById(1L, currentUser));
     }
+
+    @Test
+    void givenEmail_ShouldReturnUserResponse_WhenUserExists() {
+        User existingMock = User.builder().id(1L).name("Name").build();
+
+        when(userDAO.findByEmail("test@gmail.com")).thenReturn(Optional.of(existingMock));
+        when(userMapper.userToUserResponse(existingMock)).thenReturn(userResponse);
+
+        UserResponse result = userService.retrieveByEmail(currentUser, "test@gmail.com");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("Name", result.name());
+        verify(userDAO, times(1)).findByEmail("test@gmail.com");
+        verify(userMapper, times(1)).userToUserResponse(existingMock);
+    }
+
+    @Test
+    void givenEmail_ShouldThrowException_WhenUserNotFound() {
+        when(userDAO.findByEmail("missing@gmail.com")).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> userService.retrieveByEmail(currentUser, "missing@gmail.com"));
+
+        verify(userDAO, times(1)).findByEmail("missing@gmail.com");
+        verifyNoInteractions(userMapper);
+    }
 }

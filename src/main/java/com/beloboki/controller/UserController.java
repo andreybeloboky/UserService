@@ -86,6 +86,7 @@ public class UserController {
     public ResponseEntity<UserResponse> retrieveUserByEmail(
             @AuthenticationPrincipal CurrentUser currentUser, @PathVariable("email") String email) {
         UserResponse user = userService.retrieveByEmail(currentUser, email);
+
         return ResponseEntity.ok(user);
     }
 }
