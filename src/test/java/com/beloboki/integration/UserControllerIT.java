@@ -109,6 +109,34 @@ public class UserControllerIT extends AbstractIT {
     }
 
     @Test
+    void retrieveByEmail_shouldReturnUserResponse() {
+        webTestClient
+                .get()
+                .uri("/api/users/email/{email}", user.getEmail())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id")
+                .isEqualTo(user.getId())
+                .jsonPath("$.name")
+                .isEqualTo(NAME)
+                .jsonPath("$.surname")
+                .isEqualTo(SURNAME)
+                .jsonPath("$.email")
+                .isEqualTo(EMAIL)
+                .jsonPath("$.active")
+                .isEqualTo(false)
+                .jsonPath("$.birthDate")
+                .isEqualTo(BIRTH_DATE)
+                .jsonPath("$.paymentCards")
+                .isArray()
+                .jsonPath("$.paymentCards.length()")
+                .isEqualTo(0);
+    }
+
+    @Test
     void save_shouldCreateUser() {
         UserRequest request =
                 new UserRequest(
