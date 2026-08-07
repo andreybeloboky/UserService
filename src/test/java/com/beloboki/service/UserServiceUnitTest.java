@@ -284,7 +284,8 @@ public class UserServiceUnitTest {
     void givenEmail_ShouldThrowException_WhenUserNotFound() {
         when(userDAO.findByEmail("missing@gmail.com")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(EntityNotFoundException.class,
+        Assertions.assertThrows(
+                EntityNotFoundException.class,
                 () -> userService.retrieveByEmail(currentUser, "missing@gmail.com"));
 
         verify(userDAO, times(1)).findByEmail("missing@gmail.com");
